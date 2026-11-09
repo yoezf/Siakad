@@ -7,6 +7,7 @@ return [
         'tugas' => 'Tugas digital',
         'keuangan' => 'Keuangan dan SPP',
         'premium' => 'Layanan premium orang tua',
+        'analisis_ai' => 'Analisis AI palmistri dan fisiognomi (hiburan, memakai foto)',
     ],
 
     // Fitur awal tiap paket; Super Admin boleh menyalakan atau mematikan satuan setelahnya.

@@ -56,6 +56,9 @@ class RolePermissionSeeder extends Seeder
             // Pengumuman untuk orang tua dan siswa: admin dan kepala sekolah menyusun, staf TU hanya melihat.
             'lihat-pengumuman' => [Peran::ADMIN_SEKOLAH, Peran::KEPALA_SEKOLAH, Peran::STAF_TU],
             'kelola-pengumuman' => [Peran::ADMIN_SEKOLAH, Peran::KEPALA_SEKOLAH],
+            // Analisis AI (foto tangan dan wajah = data pribadi): hanya admin sekolah, dan hanya bila fitur analisis_ai dinyalakan Super Admin.
+            'lihat-analisis-ai' => [Peran::ADMIN_SEKOLAH],
+            'kelola-analisis-ai' => [Peran::ADMIN_SEKOLAH],
             'lihat-jadwal' => Peran::PANEL_SEKOLAH, // jadwal bukan data pribadi
             'kelola-jadwal' => [Peran::ADMIN_SEKOLAH, Peran::STAF_TU],
             // Wali kelas dan guru mata pelajaran melihat siswa di kelas yang mereka walikan atau ampu saja.
