@@ -23,7 +23,7 @@ final class BuatAnalisis
 
     public const MAKS_SISI = 1600;
 
-    /** @param  array{subject_name?: mixed, consent_name?: mixed, consent_relation?: mixed, setuju?: mixed}  $persetujuan */
+    /** @param  array{subject_name?: mixed, consent_name?: mixed, consent_relation?: mixed, setuju?: mixed, dewasa?: mixed}  $persetujuan */
     public static function handle(User $oleh, string $jenis, UploadedFile $foto, array $persetujuan): AiAnalysis
     {
         if ($oleh->school_id === null || CurrentSchool::id() !== $oleh->school_id) {
@@ -36,6 +36,12 @@ final class BuatAnalisis
         }
         if (($persetujuan['setuju'] ?? false) !== true) {
             throw ValidationException::withMessages(['setuju' => 'Persetujuan pemrosesan foto wajib diberikan sebelum foto diunggah.']);
+        }
+        if (($persetujuan['dewasa'] ?? false) !== true) {
+            throw ValidationException::withMessages(['dewasa' => 'Orang yang difoto wajib dinyatakan berusia 18 tahun ke atas.']);
+        }
+        if (AiAnalysis::whereDate('created_at', today())->count() >= (int) config('ai.batas_harian')) {
+            throw ValidationException::withMessages(['foto' => 'Batas analisis harian sekolah ini sudah tercapai. Coba lagi besok.']);
         }
         $jpeg = self::siapkanFoto($foto);
 

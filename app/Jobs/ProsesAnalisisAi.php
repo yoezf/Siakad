@@ -58,6 +58,9 @@ class ProsesAnalisisAi implements ShouldQueue
         $segar = AiAnalysis::withoutGlobalScopes()->find($a->id);
         $segar?->forceFill(['status' => 'selesai', 'result' => $r['hasil'], 'summary' => $r['ringkasan'], 'readability' => $r['keterbacaan'],
             'model' => $r['model'], 'error' => null, 'processed_at' => now()])->save();
+        if ($segar && config('ai.hapus_foto_otomatis')) {
+            $segar->hapusFoto(); // minimisasi data: hasil teks tetap, foto tidak
+        }
     }
 
     public function failed(Throwable $e): void

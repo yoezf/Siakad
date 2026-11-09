@@ -85,7 +85,7 @@ class DemoSeeder extends Seeder
     private function sd(): void
     {
         [$s, $admin, $kepala, $y, $sem] = $this->mulaiSekolah([
-            'name' => 'SD Harapan Bangsa', 'city' => 'Bandung', 'plan' => 'lengkap', 'levels' => ['sd'], 'domain' => 'harapanbangsa.demo',
+            'name' => 'SD Harapan Bangsa', 'city' => 'Bandung', 'plan' => 'lengkap', 'fitur' => ['ujian', 'tugas', 'analisis_ai'], 'levels' => ['sd'], 'domain' => 'harapanbangsa.demo',
             'kepala' => ['Drs. H. Ahmad Fauzi, M.Pd.', '196805121994031004'], 'kkm' => 70, 'alamat' => 'Jl. Merdeka No. 45, Bandung', 'telepon' => '022-4231188',
         ]);
 
@@ -230,7 +230,7 @@ class DemoSeeder extends Seeder
     /** @return array{0: School, 1: User, 2: User, 3: AcademicYear, 4: Semester} */
     private function mulaiSekolah(array $d): array
     {
-        $s = app(RegisterSchool::class)->handle(['name' => $d['name'], 'city' => $d['city'], 'plan' => $d['plan'], 'admin_name' => 'Admin '.$d['name'],
+        $s = app(RegisterSchool::class)->handle(['name' => $d['name'], 'city' => $d['city'], 'plan' => $d['plan'], 'features' => $d['fitur'] ?? null, 'admin_name' => 'Admin '.$d['name'],
             'admin_email' => 'admin@'.$d['domain'], 'admin_password' => self::SANDI]);
         $s->update(['levels' => $d['levels'], 'address' => $d['alamat'], 'phone' => $d['telepon'], 'contact_email' => 'info@'.$d['domain'], 'settings' => [
             'kurikulum' => 'Kurikulum Merdeka', 'kkm' => $d['kkm'], 'rapor_kota' => $d['city'], 'rapor_judul' => 'LAPORAN HASIL BELAJAR PESERTA DIDIK',

@@ -8,7 +8,7 @@ namespace App\Modules\Ai;
  */
 final class Skema
 {
-    public const VERSI_PERSETUJUAN = '2026-11-v1';
+    public const VERSI_PERSETUJUAN = '2026-11-v2';
 
     public const TEKS_PERSETUJUAN = 'Saya menyetujui foto ini dikirim ke layanan AI Google Gemini untuk dianalisis dan hasilnya disimpan di sistem sekolah. '
         .'Saya memahami bahwa hasilnya adalah interpretasi tradisional untuk hiburan, bukan penilaian ilmiah, dan foto serta hasilnya dapat dihapus kapan saja.';
@@ -41,6 +41,7 @@ final class Skema
             ."dalam bahasa Indonesia. Aturan wajib:\n"
             ."- Deskripsikan hanya yang benar-benar terlihat. Jika sebuah bagian tidak terlihat jelas, beri status \"tidak_terlihat\" dan kosongkan deskripsi serta interpretasinya. Jangan mengarang.\n"
             ."- Jika foto kabur, gelap, terpotong, atau bukan objek yang diminta, nilai keterbacaan \"buruk\" dan jelaskan alasannya.\n"
+            ."- Pada kolom area, isi kotak pembatas objek utama [ymin, xmin, ymax, xmax] dengan skala 0 sampai 1000 terhadap ukuran foto. Isi array kosong bila objek tidak terdeteksi.\n"
             ."- Interpretasi hanyalah penjelasan tradisi budaya, ditulis dengan kata seperti \"dalam tradisi ... dipercaya\", bukan fakta.\n";
 
         return $jenis === 'palmistry'
@@ -67,6 +68,7 @@ final class Skema
                 'required' => ['tingkat', 'alasan']],
             'ringkasan_indonesia' => $teks,
             'catatan_keterbatasan' => ['type' => 'ARRAY', 'items' => $teks],
+            'area' => ['type' => 'ARRAY', 'items' => ['type' => 'INTEGER']],
         ];
         $props += $jenis === 'palmistry' ? ['sisi_tangan' => ['type' => 'STRING', 'enum' => ['kanan', 'kiri', 'tidak_terlihat']]] : ['jumlah_wajah' => ['type' => 'INTEGER']];
         foreach (array_keys(self::BAGIAN[$jenis]) as $k) {
@@ -132,8 +134,13 @@ final class Skema
             }
         }
 
+        // Kotak pembatas objek [ymin, xmin, ymax, xmax] skala 0-1000; tidak sah atau objek tidak valid: tanpa kotak.
+        $kotak = array_values(array_map('intval', array_filter((array) ($mentah['area'] ?? []), 'is_numeric')));
+        $area = $valid && count($kotak) === 4 && min($kotak) >= 0 && max($kotak) <= 1000 && $kotak[0] < $kotak[2] && $kotak[1] < $kotak[3] ? $kotak : null;
+
         $hasil = [
             'jenis' => $jenis,
+            'area' => $area,
             $penanda => $valid,
             'keterbacaan_gambar' => ['tingkat' => $tingkat, 'alasan' => mb_substr(trim(strip_tags((string) ($mentah['keterbacaan_gambar']['alasan'] ?? ''))), 0, 300)],
             'bagian' => $bagian,

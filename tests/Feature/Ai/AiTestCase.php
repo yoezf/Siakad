@@ -6,7 +6,9 @@ use App\Models\AiAnalysis;
 use App\Models\User;
 use App\Modules\Ai\BuatAnalisis;
 use App\Support\Peran;
+use Illuminate\Http\Client\Factory as HttpFactory;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Storage;
 use Tests\Concerns\SiapkanSekolah;
@@ -48,7 +50,7 @@ abstract class AiTestCase extends TestCase
 
     protected function persetujuan(array $ubah = []): array
     {
-        return $ubah + ['subject_name' => 'Budi Santoso', 'consent_name' => 'Budi Santoso', 'consent_relation' => 'diri_sendiri', 'setuju' => true];
+        return $ubah + ['subject_name' => 'Budi Santoso', 'consent_name' => 'Budi Santoso', 'consent_relation' => 'diri_sendiri', 'setuju' => true, 'dewasa' => true];
     }
 
     protected function buat(?User $akun = null, string $jenis = 'palmistry', ?UploadedFile $foto = null, ?array $persetujuan = null, $sekolah = null): AiAnalysis
@@ -62,7 +64,7 @@ abstract class AiTestCase extends TestCase
         $b = fn (string $s = 'terlihat_jelas', string $d = 'Garis tampak panjang dan melengkung.', string $i = 'Dalam tradisi palmistri dipercaya melambangkan vitalitas.') => ['status' => $s, 'deskripsi_visual' => $d, 'interpretasi_tradisi' => $i];
 
         return $ubah + ['gambar_valid' => true, 'sisi_tangan' => 'kanan', 'keterbacaan_gambar' => ['tingkat' => 'baik', 'alasan' => 'Cahaya cukup.'],
-            'garis_kehidupan' => $b(), 'garis_kepala' => $b('terlihat_samar'), 'garis_hati' => $b(), 'garis_nasib' => $b('tidak_terlihat', '', ''),
+            'garis_kehidupan' => $b(), 'garis_kepala' => $b('terlihat_samar'), 'garis_hati' => $b(), 'garis_nasib' => $b('tidak_terlihat', '', ''), 'area' => [120, 80, 940, 900],
             'bentuk_telapak' => $b(), 'bentuk_jari' => $b(), 'ringkasan_indonesia' => 'Telapak tangan kanan dengan tiga garis utama yang terlihat.', 'catatan_keterbatasan' => ['Foto diambil dari atas.']];
     }
 
@@ -72,7 +74,20 @@ abstract class AiTestCase extends TestCase
 
         return $ubah + ['wajah_terdeteksi' => true, 'jumlah_wajah' => 1, 'keterbacaan_gambar' => ['tingkat' => 'baik', 'alasan' => 'Wajah menghadap depan.'],
             'bentuk_wajah' => $b(), 'mata' => $b('Mata berbentuk almond.'), 'hidung' => $b('Hidung dengan pangkal sedang.'), 'bibir' => $b('Bibir penuh.'), 'alis' => $b('Alis melengkung.'),
-            'dagu' => $b('Dagu bulat.'), 'proporsi_wajah' => $b('Tiga bagian wajah tampak seimbang.'), 'ringkasan_indonesia' => 'Wajah oval dengan proporsi seimbang.', 'catatan_keterbatasan' => []];
+            'area' => [100, 200, 900, 800], 'dagu' => $b('Dagu bulat.'), 'proporsi_wajah' => $b('Tiga bagian wajah tampak seimbang.'), 'ringkasan_indonesia' => 'Wajah oval dengan proporsi seimbang.', 'catatan_keterbatasan' => []];
+    }
+
+    /** Http::fake() yang dipanggil lagi tidak menimpa yang pertama (yang pertama menang), jadi pabrik HTTP diganti baru sebelum memalsukan. */
+    protected function fakeHttp(mixed $fake = null): void
+    {
+        Http::swap(new HttpFactory);
+        Http::fake($fake);
+    }
+
+    /** Menjalankan job analisis seperti pekerja antrean (Gemini dipalsukan oleh pemanggil lewat Http::fake). */
+    protected function prosesAnalisis(AiAnalysis $a): void
+    {
+        (new \App\Jobs\ProsesAnalisisAi($a->id))->handle(app(\App\Modules\Ai\GeminiService::class));
     }
 
     /** Bungkus hasil mentah menjadi respons Gemini. */

@@ -22,7 +22,7 @@ class ProsesAnalisisTest extends AiTestCase
 
     public function test_analisis_berhasil_menyimpan_hasil_terstruktur_dan_teks_indonesia(): void
     {
-        Http::fake(['*' => Http::response($this->responsGemini($this->palmMentah()))]);
+        $this->fakeHttp(['*' => Http::response($this->responsGemini($this->palmMentah()))]);
         $a = $this->buat();
 
         $this->proses($a);
@@ -41,7 +41,7 @@ class ProsesAnalisisTest extends AiTestCase
 
     public function test_fisiognomi_diproses_dengan_jenisnya(): void
     {
-        Http::fake(['*' => Http::response($this->responsGemini($this->wajahMentah()))]);
+        $this->fakeHttp(['*' => Http::response($this->responsGemini($this->wajahMentah()))]);
         $a = $this->buat(null, 'physiognomy');
 
         $this->proses($a);
@@ -52,7 +52,7 @@ class ProsesAnalisisTest extends AiTestCase
 
     public function test_kegagalan_tetap_ditandai_gagal_dengan_pesan_aman_tanpa_melempar(): void
     {
-        Http::fake(['*' => Http::response(['error' => ['message' => 'kunci '.self::KUNCI.' salah']], 403)]);
+        $this->fakeHttp(['*' => Http::response(['error' => ['message' => 'kunci '.self::KUNCI.' salah']], 403)]);
         $a = $this->buat();
 
         $this->proses($a);
@@ -66,7 +66,7 @@ class ProsesAnalisisTest extends AiTestCase
 
     public function test_kegagalan_sementara_dilempar_untuk_diulang_dan_gagal_setelah_percobaan_habis(): void
     {
-        Http::fake(['*' => Http::response([], 429)]);
+        $this->fakeHttp(['*' => Http::response([], 429)]);
         $a = $this->buat();
         $job = new ProsesAnalisisAi($a->id);
 
@@ -95,7 +95,7 @@ class ProsesAnalisisTest extends AiTestCase
 
     public function test_dihapus_saat_menunggu_tidak_memanggil_gemini(): void
     {
-        Http::fake();
+        $this->fakeHttp();
         $a = $this->buat();
         $this->untuk($this->s, fn () => $a->delete());
 
@@ -106,7 +106,7 @@ class ProsesAnalisisTest extends AiTestCase
 
     public function test_foto_dihapus_sebelum_diproses_ditandai_gagal_tanpa_memanggil_gemini(): void
     {
-        Http::fake();
+        $this->fakeHttp();
         $a = $this->buat();
         $this->untuk($this->s, fn () => $a->fresh()->hapusFoto());
 
@@ -119,7 +119,7 @@ class ProsesAnalisisTest extends AiTestCase
 
     public function test_analisis_selesai_tidak_diproses_ulang(): void
     {
-        Http::fake(['*' => Http::response($this->responsGemini($this->palmMentah()))]);
+        $this->fakeHttp(['*' => Http::response($this->responsGemini($this->palmMentah()))]);
         $a = $this->buat();
         $this->proses($a);
 
@@ -131,7 +131,7 @@ class ProsesAnalisisTest extends AiTestCase
     public function test_dihapus_saat_gemini_bekerja_tidak_dihidupkan_kembali(): void
     {
         $a = $this->buat();
-        Http::fake(function () use ($a) {
+        $this->fakeHttp(function () use ($a) {
             AiAnalysis::withoutGlobalScopes()->whereKey($a->id)->delete();
 
             return Http::response($this->responsGemini($this->palmMentah()));
@@ -145,7 +145,7 @@ class ProsesAnalisisTest extends AiTestCase
     public function test_tanpa_kunci_ditandai_gagal(): void
     {
         config(['services.gemini.key' => '']);
-        Http::fake();
+        $this->fakeHttp();
         $a = $this->buat();
 
         $this->proses($a);

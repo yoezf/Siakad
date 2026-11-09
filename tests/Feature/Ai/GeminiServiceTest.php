@@ -30,7 +30,7 @@ class GeminiServiceTest extends AiTestCase
 
     public function test_permintaan_memakai_header_kunci_model_gambar_dan_skema(): void
     {
-        Http::fake(['*' => Http::response($this->responsGemini($this->palmMentah()))]);
+        $this->fakeHttp(['*' => Http::response($this->responsGemini($this->palmMentah()))]);
 
         $r = $this->jalankan();
 
@@ -62,7 +62,7 @@ class GeminiServiceTest extends AiTestCase
 
     public function test_hasil_palmistry_terstruktur_dengan_keterangan_wajib(): void
     {
-        Http::fake(['*' => Http::response($this->responsGemini($this->palmMentah()))]);
+        $this->fakeHttp(['*' => Http::response($this->responsGemini($this->palmMentah()))]);
 
         $h = $this->jalankan()['hasil'];
 
@@ -80,7 +80,7 @@ class GeminiServiceTest extends AiTestCase
     public function test_bagian_tidak_terlihat_dikosongkan_walau_model_mengarang(): void
     {
         $mentah = $this->palmMentah(['garis_nasib' => ['status' => 'tidak_terlihat', 'deskripsi_visual' => 'Garis nasib panjang sekali', 'interpretasi_tradisi' => 'Sukses besar']]);
-        Http::fake(['*' => Http::response($this->responsGemini($mentah))]);
+        $this->fakeHttp(['*' => Http::response($this->responsGemini($mentah))]);
 
         $h = $this->jalankan()['hasil'];
 
@@ -93,7 +93,7 @@ class GeminiServiceTest extends AiTestCase
     public function test_daftar_terdeteksi_dihitung_server_bukan_dari_model(): void
     {
         $mentah = $this->palmMentah(['bagian_terdeteksi' => ['Garis nasib'], 'bagian_tidak_terdeteksi' => ['Garis hati']]);
-        Http::fake(['*' => Http::response($this->responsGemini($mentah))]);
+        $this->fakeHttp(['*' => Http::response($this->responsGemini($mentah))]);
 
         $h = $this->jalankan()['hasil'];
 
@@ -105,7 +105,7 @@ class GeminiServiceTest extends AiTestCase
     {
         $mentah = $this->palmMentah(['keterbacaan_gambar' => ['tingkat' => 'sempurna', 'alasan' => '<b>x</b>'], 'sisi_tangan' => 'atas', 'kolom_asing' => 'rahasia',
             'garis_hati' => ['status' => 'sangat_jelas', 'deskripsi_visual' => 'ada', 'interpretasi_tradisi' => 'ada']]);
-        Http::fake(['*' => Http::response($this->responsGemini($mentah))]);
+        $this->fakeHttp(['*' => Http::response($this->responsGemini($mentah))]);
 
         $r = $this->jalankan();
 
@@ -119,7 +119,7 @@ class GeminiServiceTest extends AiTestCase
     public function test_foto_bukan_telapak_tangan_tidak_menghasilkan_bagian_apa_pun(): void
     {
         $mentah = $this->palmMentah(['gambar_valid' => false]);
-        Http::fake(['*' => Http::response($this->responsGemini($mentah))]);
+        $this->fakeHttp(['*' => Http::response($this->responsGemini($mentah))]);
 
         $r = $this->jalankan();
 
@@ -135,7 +135,7 @@ class GeminiServiceTest extends AiTestCase
             'hidung' => ['status' => 'terlihat_jelas', 'deskripsi_visual' => 'Hidung mancung khas suku tertentu.', 'interpretasi_tradisi' => 'Simbol keberuntungan.'],
             'ringkasan_indonesia' => 'Wajah ini menunjukkan kepribadian yang baik.',
         ]);
-        Http::fake(['*' => Http::response($this->responsGemini($mentah))]);
+        $this->fakeHttp(['*' => Http::response($this->responsGemini($mentah))]);
 
         $r = $this->jalankan('physiognomy');
         $h = $r['hasil'];
@@ -153,7 +153,7 @@ class GeminiServiceTest extends AiTestCase
     public function test_palmistry_menyaring_klaim_kematian_dan_penyakit(): void
     {
         $mentah = $this->palmMentah(['garis_kehidupan' => ['status' => 'terlihat_jelas', 'deskripsi_visual' => 'Pendek.', 'interpretasi_tradisi' => 'Pertanda kematian dini dan penyakit jantung.']]);
-        Http::fake(['*' => Http::response($this->responsGemini($mentah))]);
+        $this->fakeHttp(['*' => Http::response($this->responsGemini($mentah))]);
 
         $h = $this->jalankan()['hasil'];
 
@@ -163,7 +163,7 @@ class GeminiServiceTest extends AiTestCase
 
     public function test_fisiognomi_banyak_wajah_atau_tanpa_wajah_tidak_dianalisis(): void
     {
-        Http::fake(['*' => Http::response($this->responsGemini($this->wajahMentah(['wajah_terdeteksi' => false, 'jumlah_wajah' => 0])))]);
+        $this->fakeHttp(['*' => Http::response($this->responsGemini($this->wajahMentah(['wajah_terdeteksi' => false, 'jumlah_wajah' => 0])))]);
 
         $r = $this->jalankan('physiognomy');
 
@@ -176,7 +176,7 @@ class GeminiServiceTest extends AiTestCase
     public function test_kegagalan_sementara_bisa_diulang_dan_tetap_dipetakan_aman(): void
     {
         foreach ([429, 500, 503] as $kode) {
-            Http::fake(['*' => Http::response(['error' => ['message' => 'rahasia '.self::KUNCI]], $kode)]);
+            $this->fakeHttp(['*' => Http::response(['error' => ['message' => 'rahasia '.self::KUNCI]], $kode)]);
             $e = $this->gagal(fn () => $this->jalankan());
             $this->assertTrue($e->bisaDiulang, "HTTP $kode");
             $this->assertStringNotContainsString(self::KUNCI, $e->getMessage());
@@ -187,30 +187,30 @@ class GeminiServiceTest extends AiTestCase
     public function test_kegagalan_tetap_tidak_diulang(): void
     {
         foreach ([400, 401, 403, 404] as $kode) {
-            Http::fake(['*' => Http::response(['error' => ['message' => 'x']], $kode)]);
+            $this->fakeHttp(['*' => Http::response(['error' => ['message' => 'x']], $kode)]);
             $this->assertFalse($this->gagal(fn () => $this->jalankan())->bisaDiulang, "HTTP $kode");
         }
     }
 
     public function test_jaringan_putus_bisa_diulang(): void
     {
-        Http::fake(fn () => throw new ConnectionException('timeout'));
+        $this->fakeHttp(fn () => throw new ConnectionException('timeout'));
 
         $this->assertTrue($this->gagal(fn () => $this->jalankan())->bisaDiulang);
     }
 
     public function test_foto_diblokir_filter_keamanan(): void
     {
-        Http::fake(['*' => Http::response(['promptFeedback' => ['blockReason' => 'SAFETY']])]);
+        $this->fakeHttp(['*' => Http::response(['promptFeedback' => ['blockReason' => 'SAFETY']])]);
         $this->assertFalse($this->gagal(fn () => $this->jalankan())->bisaDiulang);
 
-        Http::fake(['*' => Http::response(['candidates' => [['finishReason' => 'SAFETY']]])]);
+        $this->fakeHttp(['*' => Http::response(['candidates' => [['finishReason' => 'SAFETY']]])]);
         $this->assertFalse($this->gagal(fn () => $this->jalankan())->bisaDiulang);
     }
 
     public function test_respons_bukan_json_bisa_diulang(): void
     {
-        Http::fake(['*' => Http::response(['candidates' => [['content' => ['parts' => [['text' => 'bukan json']]], 'finishReason' => 'STOP']]])]);
+        $this->fakeHttp(['*' => Http::response(['candidates' => [['content' => ['parts' => [['text' => 'bukan json']]], 'finishReason' => 'STOP']]])]);
 
         $this->assertTrue($this->gagal(fn () => $this->jalankan())->bisaDiulang);
     }
@@ -218,7 +218,7 @@ class GeminiServiceTest extends AiTestCase
     public function test_tanpa_kunci_tidak_ada_permintaan_keluar(): void
     {
         config(['services.gemini.key' => '']);
-        Http::fake();
+        $this->fakeHttp();
 
         $e = $this->gagal(fn () => $this->jalankan());
 
@@ -228,7 +228,7 @@ class GeminiServiceTest extends AiTestCase
 
     public function test_jenis_tidak_dikenal_ditolak_tanpa_permintaan(): void
     {
-        Http::fake();
+        $this->fakeHttp();
 
         $this->gagal(fn () => $this->jalankan('tarot'));
 

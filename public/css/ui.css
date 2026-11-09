@@ -108,3 +108,22 @@
     .ui-select { min-width: 0; max-width: 100%; }
     .ui-card { padding: 1rem; }
 }
+
+/* ---------- modul analisis AI ---------- */
+.ui-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr)); gap: .85rem 1rem; margin-bottom: 1rem; }
+.ui-form label { display: flex; flex-direction: column; gap: .3rem; font-size: .8125rem; font-weight: 500; color: var(--ui-muted); }
+.ui-check { display: flex; align-items: flex-start; gap: .5rem; font-size: .875rem; margin-top: .5rem; color: var(--ui-text); line-height: 1.4; }
+.ui-check input { margin-top: .2rem; }
+.ui-badge-warn { background: #fffbeb; color: #92400e; }
+.ui-badge-mute { background: var(--ui-soft); color: var(--ui-muted); }
+.ui-badge-danger { background: #fef2f2; color: #991b1b; }
+.dark .ui-badge-warn { background: rgba(251, 191, 36, .12); color: #fcd34d; }
+.dark .ui-badge-danger { background: rgba(248, 113, 113, .12); color: #fca5a5; }
+.ui-foto { position: relative; display: inline-block; max-width: 22rem; width: 100%; margin: .75rem 0; border-radius: 10px; overflow: hidden; border: 1px solid var(--ui-border); }
+.ui-foto img { display: block; width: 100%; height: auto; }
+.ui-foto-kotak { position: absolute; border: 2px solid var(--ui-accent); border-radius: 6px; box-shadow: 0 0 0 9999px rgba(0, 0, 0, .18); pointer-events: none; }
+.ui-json { max-height: 18rem; overflow: auto; margin-top: .5rem; padding: .75rem; border-radius: 10px; background: var(--ui-soft); border: 1px solid var(--ui-border); font-size: .75rem; line-height: 1.5; white-space: pre-wrap; word-break: break-word; }
+.ui-bars { display: flex; flex-direction: column; gap: .3rem; margin-top: .5rem; }
+.ui-bar-baris { display: grid; grid-template-columns: 3rem 1fr 2rem; align-items: center; gap: .6rem; font-size: .8125rem; }
+.ui-bar-isi { display: block; height: .6rem; border-radius: 999px; background: var(--ui-soft); overflow: hidden; }
+.ui-bar-isi i { display: block; height: 100%; background: var(--ui-accent); border-radius: 999px; }

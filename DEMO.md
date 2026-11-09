@@ -74,6 +74,13 @@ Buka `/portal/sd-harapan-bangsa` (jendela baru) sebagai **ortu@harapanbangsa.dem
 - Orang tua tidak bisa membuka panel sekolah, dan staf tidak bisa membuka portal.
 - Setiap unduhan laporan dan setiap perubahan nilai tercatat (siapa, kapan, nilai lama dan baru).
 
+### 7. Modul Analisis AI (opsional, hanya SD demo)
+Menu **Analisis AI** (Palmistry, Physiognomy, Riwayat, Statistik) hanya muncul di sekolah yang fiturnya dinyalakan Super Admin; di data demo hanya SD Harapan Bangsa.
+- Tunjukkan peringatan "hanya untuk hiburan", kotak persetujuan, dan pernyataan 18 tahun ke atas yang wajib sebelum foto diunggah.
+- Tanpa kunci Gemini, unggahan akan berstatus gagal dengan pesan jelas. Untuk analisis sungguhan: isi `GEMINI_API_KEY` di `.env`, lalu jalankan `php artisan queue:work` di terminal terpisah (atau set `QUEUE_CONNECTION=sync` untuk demo lokal).
+- Gunakan foto dewasa yang setuju (mis. tim sendiri), jangan foto siswa. Hapus foto dan hasil lewat tombol di kartu hasil.
+- Data demo menyertakan satu analisis contoh palsu (bukan hasil Gemini) bila dibuat manual; data baru dari `demo:isi` tidak memuatnya.
+
 ## Pertanyaan yang mungkin muncul
 
 - **Android dan mode offline?** Direncanakan sebagai tahap berikutnya; saat ini berupa aplikasi web yang nyaman di ponsel.
