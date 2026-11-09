@@ -1,13 +1,12 @@
 <x-filament-panels::page>
     {{-- Gaya sebaris: halaman khusus ini tidak memakai tema Tailwind buatan sendiri. --}}
     @php($anak = $this->anak())
-    @php($th = 'border:1px solid #9ca3af; padding:.5rem')
     @if (! $anak)
         <p data-testid="tanpa-anak">Akun Anda belum terhubung ke data siswa. Hubungi admin sekolah.</p>
     @else
-        <div style="display:flex; gap:.75rem; flex-wrap:wrap; align-items:center; margin-bottom:1rem">
+        <div class="ui-bar" >
             @if ($this->daftarAnak()->count() > 1)
-                <select wire:model.live="anakId" aria-label="Anak" style="padding:.5rem .75rem; border-radius:.5rem; border:1px solid #9ca3af; background:transparent; color:inherit; min-width:10rem">
+                <select class="ui-select" wire:model.live="anakId" aria-label="Anak" style="min-width:10rem">
                     @foreach ($this->daftarAnak() as $a)
                         <option value="{{ $a->id }}">{{ $a->name }}</option>
                     @endforeach
@@ -15,16 +14,16 @@
             @else
                 <strong data-testid="nama-anak">{{ $anak->name }}</strong>
             @endif
-            <select wire:model.live="semesterId" aria-label="Semester" style="padding:.5rem .75rem; border-radius:.5rem; border:1px solid #9ca3af; background:transparent; color:inherit; min-width:12rem">
+            <select class="ui-select" wire:model.live="semesterId" aria-label="Semester" style="min-width:12rem">
                 @foreach ($this->opsiSemester() as $id => $nama)
                     <option value="{{ $id }}">{{ $nama }}</option>
                 @endforeach
             </select>
         </div>
 
-        <div style="display:flex; gap:.5rem; flex-wrap:wrap; margin-bottom:1rem">
+        <div class="ui-tabs">
             @foreach (\App\Filament\Portal\Pages\Beranda::TAB as $kode => $label)
-                <button type="button" wire:click="pilihTab('{{ $kode }}')" style="padding:.4rem 1rem; border-radius:.5rem; border:1px solid #9ca3af; background:{{ $tab === $kode ? '#059669' : 'transparent' }}; color:{{ $tab === $kode ? '#fff' : 'inherit' }}">{{ $label }}</button>
+                <button type="button" wire:click="pilihTab('{{ $kode }}')" class="ui-tab {{ $tab === $kode ? 'is-active' : '' }}">{{ $label }}</button>
             @endforeach
         </div>
 
@@ -37,18 +36,18 @@
                 <div data-testid="rapor-anak">
                     <p style="margin-bottom:.5rem">Versi <strong>{{ $r['versi']->version }}</strong>, disahkan {{ $r['versi']->approved_at->format('d-m-Y') }}.</p>
                     @unless ($r['utuh'])
-                        <p style="padding:.5rem .75rem; border-radius:.5rem; background:#fee2e2; color:#7f1d1d; margin-bottom:.75rem">Rapor ini sedang diperiksa pihak sekolah. Hubungi sekolah.</p>
+                        <p class="ui-alert ui-alert-danger" >Rapor ini sedang diperiksa pihak sekolah. Hubungi sekolah.</p>
                     @endunless
-                    <div style="overflow-x:auto">
-                        <table style="border-collapse:collapse; width:100%; min-width:24rem">
-                            <thead><tr><th style="{{ $th }}; text-align:left">Mata pelajaran</th><th style="{{ $th }}">KKM</th><th style="{{ $th }}">Nilai akhir</th><th style="{{ $th }}">Predikat</th></tr></thead>
+                    <div class="ui-wrap" >
+                        <table class="ui-table" style="min-width:24rem">
+                            <thead><tr><th >Mata pelajaran</th><th >KKM</th><th >Nilai akhir</th><th >Predikat</th></tr></thead>
                             <tbody>
                                 @foreach ($s['mapel'] as $m)
                                     <tr>
-                                        <td style="{{ $th }}">{{ $m['nama'] }}</td>
-                                        <td style="{{ $th }}; text-align:center">{{ $m['kkm'] }}</td>
-                                        <td style="{{ $th }}; text-align:center"><strong>{{ $m['bulat'] ?? '-' }}</strong></td>
-                                        <td style="{{ $th }}; text-align:center">{{ $m['predikat'] ?? '-' }}</td>
+                                        <td >{{ $m['nama'] }}</td>
+                                        <td class="c" >{{ $m['kkm'] }}</td>
+                                        <td class="c" ><strong>{{ $m['bulat'] ?? '-' }}</strong></td>
+                                        <td class="c" >{{ $m['predikat'] ?? '-' }}</td>
                                     </tr>
                                 @endforeach
                             </tbody>
@@ -56,7 +55,7 @@
                     </div>
                     <p style="margin:.5rem 0">Rata-rata: <strong>{{ $s['rata'] === null ? '-' : number_format((float) $s['rata'], 2, ',', '') }}</strong></p>
                     <p style="margin:.5rem 0"><strong>Catatan wali kelas:</strong> {{ $s['catatan'] ?? '-' }}</p>
-                    <button type="button" wire:click="unduh" style="margin-top:.5rem; padding:.5rem 1rem; border-radius:.5rem; border:0; background:#059669; color:#fff; font-weight:600">Unduh PDF</button>
+                    <button class="ui-btn ui-btn-primary" type="button" wire:click="unduh" style="margin-top:.5rem">Unduh PDF</button>
                 </div>
             @endif
         @elseif ($tab === 'nilai')
@@ -64,28 +63,28 @@
             @if (! $n || $n['hasil']['mapel'] === [])
                 <p data-testid="nilai-kosong">Belum ada mata pelajaran atau nilai untuk semester ini.</p>
             @else
-                <div style="overflow-x:auto" data-testid="nilai-anak">
-                    <table style="border-collapse:collapse; width:100%; min-width:28rem">
+                <div class="ui-wrap"  data-testid="nilai-anak">
+                    <table class="ui-table" style="min-width:28rem">
                         <thead>
                             <tr>
-                                <th style="{{ $th }}; text-align:left">Mata pelajaran</th>
-                                @foreach ($n['komponen'] as $k)<th style="{{ $th }}">{{ $k->name }}</th>@endforeach
-                                <th style="{{ $th }}">Nilai akhir</th><th style="{{ $th }}">Predikat</th>
+                                <th >Mata pelajaran</th>
+                                @foreach ($n['komponen'] as $k)<th >{{ $k->name }}</th>@endforeach
+                                <th >Nilai akhir</th><th >Predikat</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach ($n['hasil']['mapel'] as $m)
                                 <tr>
-                                    <td style="{{ $th }}">{{ $m['subject']->name }}</td>
-                                    @foreach ($n['komponen'] as $k)<td style="{{ $th }}; text-align:center">{{ isset($m['nilai'][$k->id]) ? rtrim(rtrim(number_format($m['nilai'][$k->id], 2, ',', ''), '0'), ',') : '-' }}</td>@endforeach
-                                    <td style="{{ $th }}; text-align:center"><strong>{{ $m['bulat'] ?? '-' }}</strong></td>
-                                    <td style="{{ $th }}; text-align:center">{{ $m['predikat'] ?? '-' }}</td>
+                                    <td >{{ $m['subject']->name }}</td>
+                                    @foreach ($n['komponen'] as $k)<td class="c" >{{ isset($m['nilai'][$k->id]) ? rtrim(rtrim(number_format($m['nilai'][$k->id], 2, ',', ''), '0'), ',') : '-' }}</td>@endforeach
+                                    <td class="c" ><strong>{{ $m['bulat'] ?? '-' }}</strong></td>
+                                    <td class="c" >{{ $m['predikat'] ?? '-' }}</td>
                                 </tr>
                             @endforeach
                         </tbody>
                     </table>
                 </div>
-                <p style="margin:.5rem 0; opacity:.8"><small>Nilai akhir baru muncul bila semua komponen sudah terisi. Nilai di sini belum final sampai rapor disahkan.</small></p>
+                <p class="ui-muted" style="margin:.5rem 0"><small>Nilai akhir baru muncul bila semua komponen sudah terisi. Nilai di sini belum final sampai rapor disahkan.</small></p>
             @endif
         @elseif ($tab === 'kehadiran')
             @php($h = $this->kehadiran())
@@ -109,9 +108,9 @@
             @else
                 <div data-testid="pengumuman-daftar">
                     @foreach ($p as $a)
-                        <div style="border:1px solid #9ca3af; border-radius:.75rem; padding:.75rem 1rem; margin-bottom:.75rem">
+                        <div class="ui-card" style="margin-bottom:.75rem">
                             <strong>{{ $a->title }}</strong>
-                            <small style="opacity:.75; display:block">{{ $a->published_at?->format('d-m-Y H:i') }}</small>
+                            <small class="ui-muted" style="display:block">{{ $a->published_at?->format('d-m-Y H:i') }}</small>
                             <p style="margin-top:.5rem; white-space:pre-line">{{ $a->body }}</p>
                         </div>
                     @endforeach
@@ -123,18 +122,18 @@
                 <p data-testid="jadwal-kosong">Jadwal belum tersedia.</p>
             @else
                 <p style="margin-bottom:.5rem">Kelas {{ $j['kelas']->name }}</p>
-                <div style="overflow-x:auto" data-testid="jadwal-anak">
-                    <table style="border-collapse:collapse; width:100%; min-width:36rem">
-                        <thead><tr><th style="{{ $th }}; text-align:left">Jam</th>@foreach ($j['hari'] as $hari)<th style="{{ $th }}">{{ $hari }}</th>@endforeach</tr></thead>
+                <div class="ui-wrap"  data-testid="jadwal-anak">
+                    <table class="ui-table" style="min-width:36rem">
+                        <thead><tr><th >Jam</th>@foreach ($j['hari'] as $hari)<th >{{ $hari }}</th>@endforeach</tr></thead>
                         <tbody>
                             @foreach ($j['jam'] as $jam)
                                 <tr>
-                                    <td style="{{ $th }}; white-space:nowrap"><strong>{{ $jam->name }}</strong><br><small>{{ $jam->rentang() }}</small></td>
+                                    <td class="nw" ><strong>{{ $jam->name }}</strong><br><small>{{ $jam->rentang() }}</small></td>
                                     @if ($jam->is_break)
-                                        <td colspan="{{ count($j['hari']) }}" style="{{ $th }}; text-align:center; opacity:.7">Istirahat</td>
+                                        <td class="c ui-muted" colspan="{{ count($j['hari']) }}" >Istirahat</td>
                                     @else
                                         @foreach ($j['hari'] as $no => $hari)
-                                            <td style="{{ $th }}; vertical-align:top">
+                                            <td class="top" >
                                                 @foreach ($j['sel']->get($jam->id.'-'.$no, collect()) as $e)<strong>{{ $e->subject->name }}</strong><br><small>{{ $e->staff->name }}</small>@endforeach
                                             </td>
                                         @endforeach

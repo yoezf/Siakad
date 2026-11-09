@@ -28,6 +28,8 @@ class SekolahPanelProvider extends PanelProvider
             ->id('sekolah')
             ->path('sekolah')
             ->login()
+            ->defaultThemeMode(\Filament\Enums\ThemeMode::Light)
+            ->sidebarCollapsibleOnDesktop()
             ->tenant(School::class, slugAttribute: 'slug')
             ->tenantProfile(ProfilSekolah::class)
             ->colors([

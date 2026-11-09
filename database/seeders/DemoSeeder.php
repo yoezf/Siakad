@@ -302,7 +302,7 @@ class DemoSeeder extends Seeder
             $st = Student::create(['name' => $this->nama($p), 'gender' => $p ? 'P' : 'L', 'nis' => sprintf('%d%04d', $sem->start_date->year, ++$this->nomorSiswa),
                 'nisn' => sprintf('%010d', 3100000000 + $this->nomorSiswa * 7919), 'birth_place' => $k->school->city ?? 'Bandung', 'birth_date' => $lahir->toDateString()]);
             Enrollment::tempatkan($st, $k);
-            $this->kemampuan[$st->id] = mt_rand(58, 94);
+            $this->kemampuan[$st->id] = mt_rand(70, 96);
             $daftar[] = $st;
         }
         DB::table('enrollments')->where('classroom_id', $k->id)->update(['joined_at' => $sem->start_date->toDateString()]);
@@ -322,7 +322,7 @@ class DemoSeeder extends Seeder
                 if (in_array($nama, $tanpaKomponen, true) || in_array($nama, $tanpaSiswa[$st->id] ?? [], true)) {
                     continue;
                 }
-                $matriks[$st->id][$c->id] = max(40, min(100, $this->kemampuan[$st->id] + mt_rand(-12, 12) + (($idx % 3) - 1) * 3));
+                $matriks[$st->id][$c->id] = max(55, min(100, $this->kemampuan[$st->id] + mt_rand(-12, 12) + (($idx % 3) - 1) * 3));
             }
         }
         if ($matriks !== []) {

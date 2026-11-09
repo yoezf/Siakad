@@ -27,6 +27,8 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
+            ->defaultThemeMode(\Filament\Enums\ThemeMode::Light)
+            ->sidebarCollapsibleOnDesktop()
             ->colors([
                 'primary' => Color::Cyan,
             ])

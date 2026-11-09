@@ -24,6 +24,8 @@ use App\Policies\SchoolPolicy;
 use App\Policies\StudentPolicy;
 use App\Policies\TahunAjaranPolicy;
 use App\Policies\UserPolicy;
+use Filament\Support\Facades\FilamentView;
+use Filament\View\PanelsRenderHook;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 
@@ -36,6 +38,9 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        // Gaya bersama halaman buatan sendiri dan penyempurnaan Filament (public/css/ui.css); versi mengikuti waktu ubah berkas agar tidak tersimpan usang di peramban.
+        FilamentView::registerRenderHook(PanelsRenderHook::HEAD_END, fn () => '<link rel="stylesheet" href="'.asset('css/ui.css').'?v='.filemtime(public_path('css/ui.css')).'">');
+
         // Filament memeriksa policy pada setiap aksi, bukan hanya menu. Tanpa policy, aksi yang dipanggil langsung lolos.
         Gate::policy(School::class, SchoolPolicy::class);
         Gate::policy(User::class, UserPolicy::class);

@@ -17,6 +17,8 @@ class RingkasanSekolah extends StatsOverviewWidget
 {
     protected static ?int $sort = -10;
 
+    protected static bool $isLazy = false; // angka tampil bersama halaman, tanpa kotak kosong beberapa detik
+
     protected ?string $heading = 'Ringkasan sekolah';
 
     public static function canView(): bool

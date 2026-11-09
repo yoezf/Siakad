@@ -1,0 +1,99 @@
+/*
+ * Gaya bersama halaman buatan sendiri (portal, rapor, nilai, laporan, jadwal) dan penyempurnaan tampilan Filament.
+ * Minimalis: banyak ruang kosong, garis tipis, satu warna aksen. Mengikuti mode terang dan gelap Filament (kelas .dark).
+ */
+:root {
+    --ui-border: #e5e7eb;
+    --ui-border-strong: #d1d5db;
+    --ui-surface: #ffffff;
+    --ui-soft: #f9fafb;
+    --ui-head: #6b7280;
+    --ui-text: #111827;
+    --ui-muted: #6b7280;
+    --ui-accent: #0891b2;
+    --ui-accent-soft: #ecfeff;
+    --ui-radius: 12px;
+    --ui-shadow: 0 1px 2px rgba(16, 24, 40, .05);
+}
+.dark {
+    --ui-border: #27272a;
+    --ui-border-strong: #3f3f46;
+    --ui-surface: #18181b;
+    --ui-soft: #1f1f23;
+    --ui-head: #a1a1aa;
+    --ui-text: #f4f4f5;
+    --ui-muted: #a1a1aa;
+    --ui-accent: #22d3ee;
+    --ui-accent-soft: rgba(34, 211, 238, .1);
+    --ui-shadow: none;
+}
+
+/* ---------- baris alat (pilihan semester, kelas, dan seterusnya) ---------- */
+.ui-bar { display: flex; flex-wrap: wrap; align-items: center; gap: .625rem; margin-bottom: 1.25rem; }
+.ui-select, .ui-input {
+    padding: .5rem .75rem; border-radius: 10px; border: 1px solid var(--ui-border-strong); background: var(--ui-surface);
+    color: var(--ui-text); font-size: .875rem; line-height: 1.25rem; box-shadow: var(--ui-shadow); min-width: 8rem;
+}
+.ui-input { width: 100%; }
+.ui-select:focus, .ui-input:focus { outline: 2px solid var(--ui-accent); outline-offset: 1px; border-color: transparent; }
+
+/* ---------- tombol ---------- */
+.ui-btn {
+    display: inline-flex; align-items: center; gap: .4rem; padding: .5rem 1rem; border-radius: 10px; font-size: .875rem; font-weight: 600;
+    border: 1px solid var(--ui-border-strong); background: var(--ui-surface); color: var(--ui-text); cursor: pointer; box-shadow: var(--ui-shadow);
+    transition: background .15s, border-color .15s;
+}
+.ui-btn:hover { background: var(--ui-soft); }
+.ui-btn-primary { background: var(--ui-accent); border-color: var(--ui-accent); color: #fff; }
+.ui-btn-primary:hover { background: var(--ui-accent); filter: brightness(.94); }
+.ui-btn-warn { border-color: #d97706; color: #b45309; }
+.dark .ui-btn-warn { color: #fbbf24; }
+.ui-btn-sm { padding: .3rem .75rem; font-size: .8125rem; }
+.ui-btn[disabled] { opacity: .5; cursor: not-allowed; }
+
+/* ---------- tab ---------- */
+.ui-tabs { display: flex; flex-wrap: wrap; gap: .25rem; margin-bottom: 1.25rem; padding: .25rem; background: var(--ui-soft); border: 1px solid var(--ui-border); border-radius: 12px; width: fit-content; max-width: 100%; }
+.ui-tab { padding: .4rem .9rem; border-radius: 9px; font-size: .875rem; font-weight: 500; color: var(--ui-muted); border: 0; background: transparent; cursor: pointer; }
+.ui-tab:hover { color: var(--ui-text); }
+.ui-tab.is-active { background: var(--ui-surface); color: var(--ui-accent); font-weight: 600; box-shadow: var(--ui-shadow); }
+
+/* ---------- kartu dan tabel ---------- */
+.ui-card { background: var(--ui-surface); border: 1px solid var(--ui-border); border-radius: var(--ui-radius); padding: 1.25rem; box-shadow: var(--ui-shadow); margin-bottom: 1rem; }
+.ui-card h3, .ui-title { font-weight: 700; font-size: 1.05rem; margin: 0 0 .25rem; color: var(--ui-text); }
+.ui-sub { color: var(--ui-muted); font-size: .8125rem; font-weight: 400; }
+.ui-wrap { overflow-x: auto; border: 1px solid var(--ui-border); border-radius: var(--ui-radius); background: var(--ui-surface); box-shadow: var(--ui-shadow); margin-bottom: 1rem; }
+.ui-table { width: 100%; border-collapse: collapse; font-size: .875rem; color: var(--ui-text); }
+.ui-table th { padding: .65rem .85rem; text-align: left; font-size: .72rem; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: var(--ui-head); background: var(--ui-soft); border-bottom: 1px solid var(--ui-border); white-space: nowrap; }
+.ui-table td { padding: .6rem .85rem; border-bottom: 1px solid var(--ui-border); vertical-align: middle; }
+.ui-table tbody tr:last-child td { border-bottom: 0; }
+.ui-table tbody tr:hover td { background: var(--ui-soft); }
+.ui-table .c { text-align: center; }
+.ui-table .nw { white-space: nowrap; }
+.ui-table .top { vertical-align: top; }
+.ui-table input.ui-input { min-width: 4.5rem; text-align: center; padding: .35rem .5rem; }
+.ui-table small { color: var(--ui-muted); font-weight: 400; text-transform: none; letter-spacing: 0; }
+
+/* ---------- pemberitahuan ---------- */
+.ui-alert { padding: .7rem 1rem; border-radius: 10px; margin-bottom: .85rem; font-size: .875rem; border: 1px solid transparent; }
+.ui-alert ul { margin: .35rem 0 0 1.1rem; list-style: disc; }
+.ui-alert-info { background: #ecfeff; border-color: #a5f3fc; color: #155e75; }
+.ui-alert-warn { background: #fffbeb; border-color: #fde68a; color: #92400e; }
+.ui-alert-danger { background: #fef2f2; border-color: #fecaca; color: #991b1b; }
+.dark .ui-alert-info { background: rgba(34, 211, 238, .08); border-color: rgba(34, 211, 238, .3); color: #67e8f9; }
+.dark .ui-alert-warn { background: rgba(251, 191, 36, .08); border-color: rgba(251, 191, 36, .3); color: #fcd34d; }
+.dark .ui-alert-danger { background: rgba(248, 113, 113, .08); border-color: rgba(248, 113, 113, .3); color: #fca5a5; }
+
+/* ---------- lain-lain ---------- */
+.ui-muted { color: var(--ui-muted); }
+.ui-empty { text-align: center; padding: 2.5rem 1rem; color: var(--ui-muted); border: 1px dashed var(--ui-border-strong); border-radius: var(--ui-radius); background: var(--ui-surface); }
+.ui-stack { display: flex; flex-direction: column; gap: .75rem; }
+.ui-badge { display: inline-block; padding: .1rem .55rem; border-radius: 999px; font-size: .75rem; font-weight: 600; background: var(--ui-accent-soft); color: var(--ui-accent); }
+.ui-kv { display: flex; flex-wrap: wrap; gap: 1.5rem; margin: .5rem 0 1rem; }
+.ui-kv b { display: block; font-size: 1.5rem; line-height: 1.2; color: var(--ui-text); }
+.ui-kv span { font-size: .8125rem; color: var(--ui-muted); }
+.ui-note { white-space: pre-line; line-height: 1.6; margin-top: .5rem; }
+
+/* ---------- penyempurnaan Filament ---------- */
+.fi-header-heading { letter-spacing: -.01em; }
+.fi-wi-stats-overview-stat { border-radius: var(--ui-radius) !important; }
+.fi-ta-ctn, .fi-section { border-radius: var(--ui-radius) !important; }
