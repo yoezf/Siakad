@@ -223,7 +223,7 @@ class PanelJadwalTest extends TestCase
         $d = $this->dasar();
         foreach (Peran::PANEL_SEKOLAH as $peran) {
             $akun = $peran === Peran::ADMIN_SEKOLAH ? $this->adminDari($d['s']) : $this->penggunaSekolah($d['s'], $peran);
-            foreach (['schedule-entries', 'time-slots', 'jadwal-mingguan'] as $halaman) {
+            foreach (['jadwal', 'jam-pelajaran', 'jadwal-mingguan'] as $halaman) {
                 $this->flushSession();
                 auth()->forgetGuards();
                 $this->assertSame(200, $this->actingAs($akun)->get("/sekolah/{$d['s']->slug}/{$halaman}")->getStatusCode(), "$peran di $halaman");
