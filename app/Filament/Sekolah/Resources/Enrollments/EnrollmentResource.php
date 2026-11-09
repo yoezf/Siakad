@@ -31,6 +31,8 @@ class EnrollmentResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Pembagian kelas';
 
+    protected static ?string $slug = 'penempatan-siswa';
+
     // Hak akses diatur oleh DataPribadiPolicy. Penempatan tidak diedit atau dihapus: pindahkan agar riwayat utuh.
     public static function table(Table $table): Table
     {

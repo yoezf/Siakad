@@ -26,6 +26,8 @@ class SchoolResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Daftar sekolah';
 
+    protected static ?string $slug = 'sekolah';
+
     public static function canViewAny(): bool
     {
         return auth()->user()?->can('kelola-sekolah') ?? false;

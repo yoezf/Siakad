@@ -22,9 +22,9 @@ class PanelDataMasterTest extends TestCase
 {
     use BuatXlsx, SiapkanSekolah;
 
-    private const PRIBADI = ['students', 'staff', 'guardians'];
+    private const PRIBADI = ['siswa', 'guru-staf', 'orang-tua'];
 
-    private const MASTER = ['subjects', 'classrooms', 'academic-years', 'semesters'];
+    private const MASTER = ['mata-pelajaran', 'kelas', 'tahun-ajaran', 'semester'];
 
     private function kodeHalaman(string $peran, string $slug, string $halaman, $sekolah): int
     {
@@ -51,7 +51,7 @@ class PanelDataMasterTest extends TestCase
             }
             foreach ($ditolak as $p) {
                 // Wali kelas dan guru mapel boleh membuka halaman Siswa (daftarnya dibatasi pada kelas mereka; lihat AksesGuruTest).
-                $boleh = $h === 'students' && in_array($p, [Peran::WALI_KELAS, Peran::GURU_MAPEL], true);
+                $boleh = $h === 'siswa' && in_array($p, [Peran::WALI_KELAS, Peran::GURU_MAPEL], true);
                 $this->assertSame($boleh ? 200 : 403, $this->kodeHalaman($p, $s->slug, $h, $s), "$p di $h");
             }
         }

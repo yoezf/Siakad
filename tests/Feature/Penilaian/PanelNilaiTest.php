@@ -23,6 +23,14 @@ class PanelNilaiTest extends NilaiTestCase
         return \App\Models\Score::withoutGlobalScopes()->where('student_id', $siswaId)->where('subject_id', $mapelId)->where('component_id', $komponenId)->value('value');
     }
 
+    public function test_halaman_input_nilai_dibuka_pada_semester_aktif_bukan_yang_terbaru(): void
+    {
+        $this->semester($this->s, $this->y, 2, '2027-01-01', '2027-06-30'); // semester depan, tidak aktif
+        $this->masuk($this->akunAdmin);
+
+        Livewire::test(InputNilai::class)->assertSet('semesterId', $this->sem->id);
+    }
+
     // ---------- komponen penilaian ----------
 
     public function test_admin_menambah_komponen_lewat_formulir(): void
@@ -345,7 +353,7 @@ class PanelNilaiTest extends NilaiTestCase
         ];
         foreach ($harapan as $peran => $kode) {
             $akun = $peran === Peran::ADMIN_SEKOLAH ? $this->adminDari($this->s) : $this->penggunaSekolah($this->s, $peran);
-            foreach (['input-nilai', 'rekap-nilai', 'assessment-components'] as $i => $halaman) {
+            foreach (['input-nilai', 'rekap-nilai', 'komponen-penilaian'] as $i => $halaman) {
                 $this->flushSession();
                 auth()->forgetGuards();
                 $this->assertSame($kode[$i], $this->actingAs($akun)->get("/sekolah/{$this->s->slug}/$halaman")->getStatusCode(), "$peran di $halaman");

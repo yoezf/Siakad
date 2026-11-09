@@ -35,6 +35,8 @@ class StudentResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Siswa';
 
+    protected static ?string $slug = 'siswa';
+
     /**
      * Pengguna tanpa izin lihat-data-pribadi (wali kelas dan guru mata pelajaran) hanya melihat siswa yang berada di
      * kelas mereka pada tahun ajaran berjalan. Ini lapisan kedua di atas StudentPolicy; tanpa kelas, hasilnya kosong.

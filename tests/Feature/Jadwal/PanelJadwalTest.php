@@ -280,7 +280,7 @@ class PanelJadwalTest extends TestCase
         $this->jadwal($b, $kelasB, $mapelB, $this->jam($b, 1, '07:00', '07:45'), 1);
         $this->jadwal($d['s'], $d['a'], $d['mtk'], $d['j1'], 1);
 
-        $this->actingAs($this->adminDari($d['s']))->get("/sekolah/{$d['s']->slug}/schedule-entries")
+        $this->actingAs($this->adminDari($d['s']))->get("/sekolah/{$d['s']->slug}/jadwal")
             ->assertOk()->assertSee('Matematika')->assertDontSee('Pelajaran Rahasia B')->assertDontSee('9Z-Rahasia');
     }
 

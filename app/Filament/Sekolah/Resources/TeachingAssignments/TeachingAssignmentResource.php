@@ -30,6 +30,8 @@ class TeachingAssignmentResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Penugasan guru';
 
+    protected static ?string $slug = 'penugasan-guru';
+
     // Hak akses diatur oleh DataMasterPolicy. Penugasan tidak dihapus; yang boleh berganti hanya gurunya.
     public static function form(Schema $schema): Schema
     {

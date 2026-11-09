@@ -100,7 +100,7 @@ class AksesGuruTest extends TestCase
 
     public function test_halaman_http_guru_menampilkan_siswa_kelasnya_saja(): void
     {
-        $this->actingAs($this->waliA)->get("/sekolah/{$this->s->slug}/students")
+        $this->actingAs($this->waliA)->get("/sekolah/{$this->s->slug}/siswa")
             ->assertOk()->assertSee('Siswa A1')->assertSee('Siswa A2')
             ->assertDontSee('Siswa B1')->assertDontSee('Siswa C1');
     }
@@ -158,7 +158,7 @@ class AksesGuruTest extends TestCase
 
     public function test_guru_tetap_tidak_melihat_data_guru_dan_orang_tua(): void
     {
-        foreach (['staff', 'guardians', 'enrollments'] as $halaman) {
+        foreach (['guru-staf', 'orang-tua', 'penempatan-siswa'] as $halaman) {
             $this->flushSession();
             auth()->forgetGuards();
             $this->actingAs($this->waliA)->get("/sekolah/{$this->s->slug}/{$halaman}")->assertForbidden();

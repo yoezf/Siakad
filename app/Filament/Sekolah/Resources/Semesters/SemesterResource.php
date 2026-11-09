@@ -29,6 +29,8 @@ class SemesterResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Semester';
 
+    protected static ?string $slug = 'semester';
+
     // Hak akses diatur oleh TahunAjaranPolicy.
     public static function form(Schema $schema): Schema
     {

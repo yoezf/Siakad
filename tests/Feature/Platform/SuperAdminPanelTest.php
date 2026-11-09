@@ -82,6 +82,6 @@ class SuperAdminPanelTest extends TestCase
     public function test_admin_sekolah_tidak_bisa_membuka_daftar_sekolah(): void
     {
         $a = $this->sekolah('SD A');
-        $this->actingAs($this->adminDari($a))->get('/admin/schools')->assertForbidden();
+        $this->actingAs($this->adminDari($a))->get('/admin/sekolah')->assertForbidden();
     }
 }

@@ -148,7 +148,7 @@ class PanelPembagianKelasTest extends TestCase
             $akun = $peran === Peran::ADMIN_SEKOLAH ? $this->adminDari($s) : $this->penggunaSekolah($s, $peran);
             $this->flushSession();
             auth()->forgetGuards();
-            $this->assertSame($harapan, $this->actingAs($akun)->get("/sekolah/{$s->slug}/enrollments")->getStatusCode(), $peran);
+            $this->assertSame($harapan, $this->actingAs($akun)->get("/sekolah/{$s->slug}/penempatan-siswa")->getStatusCode(), $peran);
         }
     }
 
@@ -205,7 +205,7 @@ class PanelPembagianKelasTest extends TestCase
             ->assertHasNoTableActionErrors();
 
         $this->assertSame($guru->id, $kelas->fresh()->homeroom_staff_id);
-        $this->get("/sekolah/{$s->slug}/classrooms")->assertSee('Bu Sari');
+        $this->get("/sekolah/{$s->slug}/kelas")->assertSee('Bu Sari');
     }
 
     public function test_guru_tidak_bisa_menjadi_wali_dua_kelas_pada_tahun_yang_sama_dan_tendik_tidak_bisa_dipilih(): void
@@ -282,7 +282,7 @@ class PanelPembagianKelasTest extends TestCase
             $akun = $peran === Peran::ADMIN_SEKOLAH ? $this->adminDari($s) : $this->penggunaSekolah($s, $peran);
             $this->flushSession();
             auth()->forgetGuards();
-            $this->assertSame(200, $this->actingAs($akun)->get("/sekolah/{$s->slug}/teaching-assignments")->getStatusCode(), $peran);
+            $this->assertSame(200, $this->actingAs($akun)->get("/sekolah/{$s->slug}/penugasan-guru")->getStatusCode(), $peran);
         }
 
         $this->masukPanel($this->penggunaSekolah($s, Peran::GURU_MAPEL), 'sekolah', $s);
@@ -296,7 +296,7 @@ class PanelPembagianKelasTest extends TestCase
         $this->untuk($s, fn () => Enrollment::tempatkan($this->siswaDi($s, 'Budi Berkelas'), $this->kelas($s, $y, 'Kelas-Unik-9Z')));
         $this->siswaDi($s, 'Siti Tanpa Kelas');
 
-        $this->actingAs($this->adminDari($s))->get("/sekolah/{$s->slug}/students")
+        $this->actingAs($this->adminDari($s))->get("/sekolah/{$s->slug}/siswa")
             ->assertOk()->assertSee('Budi Berkelas')->assertSee('Kelas-Unik-9Z')->assertSee('Siti Tanpa Kelas');
     }
 }

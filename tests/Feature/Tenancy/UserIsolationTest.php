@@ -34,7 +34,7 @@ class UserIsolationTest extends TestCase
         $this->penggunaSekolah($b, Peran::GURU_MAPEL, 'Guru Milik B');
         $this->penggunaSekolah($a, Peran::GURU_MAPEL, 'Guru Milik A'); // nama ini hanya bisa tampil dari tabel, bukan menu akun
 
-        $this->actingAs($this->adminDari($a))->get("/sekolah/{$a->slug}/users")
+        $this->actingAs($this->adminDari($a))->get("/sekolah/{$a->slug}/pengguna")
             ->assertOk()
             ->assertSee('Guru Milik A')
             ->assertSee('admin-sd-a@contoh.test')
@@ -47,14 +47,14 @@ class UserIsolationTest extends TestCase
         $a = $this->sekolah('SD A');
         $b = $this->sekolah('SD B');
 
-        $this->actingAs($this->adminDari($a))->get("/sekolah/{$b->slug}/users")->assertNotFound();
+        $this->actingAs($this->adminDari($a))->get("/sekolah/{$b->slug}/pengguna")->assertNotFound();
     }
 
     public function test_admin_membuka_halaman_pengguna_sekolahnya_sendiri(): void
     {
         $a = $this->sekolah('SD A');
 
-        $this->actingAs($this->adminDari($a))->get("/sekolah/{$a->slug}/users")->assertOk();
+        $this->actingAs($this->adminDari($a))->get("/sekolah/{$a->slug}/pengguna")->assertOk();
     }
 
     public function test_guru_tidak_boleh_mengelola_pengguna(): void
@@ -62,7 +62,7 @@ class UserIsolationTest extends TestCase
         $a = $this->sekolah('SD A');
         $guru = $this->penggunaSekolah($a, Peran::GURU_MAPEL);
 
-        $this->actingAs($guru)->get("/sekolah/{$a->slug}/users")->assertForbidden();
+        $this->actingAs($guru)->get("/sekolah/{$a->slug}/pengguna")->assertForbidden();
     }
 
     public function test_pengguna_baru_selalu_masuk_sekolah_aktif_dengan_peran_pilihan(): void

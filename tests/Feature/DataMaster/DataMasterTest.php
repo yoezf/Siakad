@@ -50,7 +50,7 @@ class DataMasterTest extends TestCase
         $this->siswa($a, 'Siswa Milik A');
         $this->siswa($b, 'Siswa Milik B');
 
-        $this->actingAs($this->adminDari($a))->get("/sekolah/{$a->slug}/students")
+        $this->actingAs($this->adminDari($a))->get("/sekolah/{$a->slug}/siswa")
             ->assertOk()->assertSee('Siswa Milik A')->assertDontSee('Siswa Milik B');
     }
 

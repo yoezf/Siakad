@@ -51,7 +51,10 @@ class InputNilai extends Page
 
     public function mount(): void
     {
-        $this->semesterId = array_key_first($this->opsiSemester());
+        // Dibuka pada semester aktif bila boleh; urutan terbaru dahulu akan membuka semester depan yang masih kosong.
+        $opsi = $this->opsiSemester();
+        $aktif = Semester::where('aktif', 1)->value('id');
+        $this->semesterId = isset($opsi[$aktif]) ? $aktif : array_key_first($opsi);
         $this->kelasId = array_key_first($this->opsiKelas());
         $this->mapelId = array_key_first($this->opsiMapel());
         $this->muat();

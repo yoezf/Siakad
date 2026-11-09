@@ -29,6 +29,8 @@ class AcademicYearResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Tahun ajaran';
 
+    protected static ?string $slug = 'tahun-ajaran';
+
     // Hak akses diatur oleh TahunAjaranPolicy.
     public static function form(Schema $schema): Schema
     {

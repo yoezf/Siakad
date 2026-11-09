@@ -27,6 +27,8 @@ class UserResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Pengguna';
 
+    protected static ?string $slug = 'pengguna';
+
     /** Lapisan kedua di atas penyaringan tenant Filament; tanpa sekolah aktif hasilnya kosong, bukan semua pengguna. */
     public static function getEloquentQuery(): Builder
     {

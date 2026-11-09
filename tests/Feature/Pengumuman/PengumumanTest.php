@@ -178,7 +178,7 @@ class PengumumanTest extends PortalTestCase
             $akun = $peran === Peran::ADMIN_SEKOLAH ? $this->adminDari($this->s) : $this->penggunaSekolah($this->s, $peran);
             $this->flushSession();
             auth()->forgetGuards();
-            $this->assertSame($kode, $this->actingAs($akun)->get("/sekolah/{$this->s->slug}/announcements")->getStatusCode(), $peran);
+            $this->assertSame($kode, $this->actingAs($akun)->get("/sekolah/{$this->s->slug}/pengumuman")->getStatusCode(), $peran);
         }
     }
 

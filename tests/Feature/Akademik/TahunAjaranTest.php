@@ -41,7 +41,7 @@ class TahunAjaranTest extends TestCase
         $this->tahunAjaran($a, '2025/2026');
         $this->tahunAjaran($b, '2030/2031');
 
-        $this->actingAs($this->adminDari($a))->get("/sekolah/{$a->slug}/academic-years")
+        $this->actingAs($this->adminDari($a))->get("/sekolah/{$a->slug}/tahun-ajaran")
             ->assertOk()->assertSee('2025/2026')->assertDontSee('2030/2031');
     }
 
@@ -234,8 +234,8 @@ class TahunAjaranTest extends TestCase
         $s = $this->semester($a, $y);
         $guru = $this->penggunaSekolah($a, Peran::GURU_MAPEL);
 
-        $this->actingAs($guru)->get("/sekolah/{$a->slug}/academic-years")->assertOk();
-        $this->actingAs($guru)->get("/sekolah/{$a->slug}/semesters")->assertOk();
+        $this->actingAs($guru)->get("/sekolah/{$a->slug}/tahun-ajaran")->assertOk();
+        $this->actingAs($guru)->get("/sekolah/{$a->slug}/semester")->assertOk();
 
         $this->masukPanel($guru, 'sekolah', $a);
         Livewire::test(ManageAcademicYears::class)->assertActionHidden('create')->assertTableActionHidden('edit', $y);

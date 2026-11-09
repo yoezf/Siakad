@@ -37,6 +37,8 @@ class ScheduleEntryResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Jadwal pelajaran';
 
+    protected static ?string $slug = 'jadwal';
+
     // Hak akses diatur oleh JadwalPolicy. Parameter closure Filament harus bernama $query, $record, $action, $get, dst.
     public static function form(Schema $schema): Schema
     {
