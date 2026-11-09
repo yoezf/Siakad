@@ -27,6 +27,8 @@ class SubjectResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Mata pelajaran';
 
+    protected static ?string $navigationLabel = 'Mata pelajaran';
+
     protected static ?string $slug = 'mata-pelajaran';
 
     // Hak akses diatur oleh DataMasterPolicy.

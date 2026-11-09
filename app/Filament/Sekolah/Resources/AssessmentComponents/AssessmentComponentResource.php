@@ -35,6 +35,8 @@ class AssessmentComponentResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Komponen penilaian';
 
+    protected static ?string $navigationLabel = 'Komponen penilaian';
+
     protected static ?string $slug = 'komponen-penilaian';
 
     // Hak akses diatur oleh PenilaianPolicy. Parameter closure Filament harus bernama $rule, $record, $action, dst.

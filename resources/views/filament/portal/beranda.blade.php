@@ -39,7 +39,7 @@
                         <p class="ui-alert ui-alert-danger" >Rapor ini sedang diperiksa pihak sekolah. Hubungi sekolah.</p>
                     @endunless
                     <div class="ui-wrap" >
-                        <table class="ui-table" style="min-width:24rem">
+                        <table class="ui-table">
                             <thead><tr><th >Mata pelajaran</th><th >KKM</th><th >Nilai akhir</th><th >Predikat</th></tr></thead>
                             <tbody>
                                 @foreach ($s['mapel'] as $m)

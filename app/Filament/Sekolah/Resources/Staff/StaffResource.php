@@ -30,6 +30,8 @@ class StaffResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Guru dan tendik';
 
+    protected static ?string $navigationLabel = 'Guru dan tendik';
+
     protected static ?string $slug = 'guru-staf';
 
     // Hak akses diatur oleh DataPribadiPolicy.

@@ -28,6 +28,8 @@ class GuardianResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Orang tua dan wali';
 
+    protected static ?string $navigationLabel = 'Orang tua dan wali';
+
     protected static ?string $slug = 'orang-tua';
 
     // Hak akses diatur oleh DataPribadiPolicy.

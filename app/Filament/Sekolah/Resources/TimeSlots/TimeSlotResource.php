@@ -36,6 +36,8 @@ class TimeSlotResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Jam pelajaran';
 
+    protected static ?string $navigationLabel = 'Jam pelajaran';
+
     protected static ?string $slug = 'jam-pelajaran';
 
     // Hak akses diatur oleh JadwalPolicy. Parameter closure Filament harus bernama $rule, $record, $action, dst.

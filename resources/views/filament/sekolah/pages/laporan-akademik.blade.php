@@ -25,18 +25,20 @@
     @if (! $t)
         <p data-testid="laporan-kosong">Pilih semester dan kelas yang berhak Anda lihat.</p>
     @else
-        <div class="ui-bar" >
+        <div class="ui-bar">
             <button class="ui-btn ui-btn-primary" type="button" wire:click="unduh('pdf')" >Unduh PDF</button>
             <button type="button" wire:click="unduh('xlsx')" class="ui-btn">Unduh Excel</button>
         </div>
-        <h3 style="font-weight:700">{{ $t['judul'] }}</h3>
-        @foreach ($t['keterangan'] as $k)<p class="ui-muted" >{{ $k }}</p>@endforeach
-        <div style="overflow-x:auto; margin-top:.75rem">
+        <div class="ui-card">
+            <h3 class="ui-title">{{ $t['judul'] }}</h3>
+            <div class="ui-sub">@foreach ($t['keterangan'] as $k)<div>{{ $k }}</div>@endforeach</div>
+        </div>
+        <div class="ui-wrap">
             <table class="ui-table" data-testid="laporan-tabel" style="min-width:32rem">
                 <thead><tr>@foreach ($t['kolom'] as $kolom)<th >{{ $kolom }}</th>@endforeach</tr></thead>
                 <tbody>
                     @forelse ($t['baris'] as $baris)
-                        <tr>@foreach ($baris as $i => $c)<td style="{{ $i === 1 ? '' : 'text-align:center' }}">{{ is_float($c) ? number_format($c, 2, ',', '') : ($c ?? '-') }}</td>@endforeach</tr>
+                        <tr>@foreach ($baris as $i => $c)<td class="{{ $i === 1 ? '' : 'c' }}">{{ is_float($c) ? number_format($c, 2, ',', '') : ($c ?? '-') }}</td>@endforeach</tr>
                     @empty
                         <tr><td class="c" colspan="{{ count($t['kolom']) }}" >Tidak ada siswa.</td></tr>
                     @endforelse

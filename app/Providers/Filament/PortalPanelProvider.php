@@ -31,7 +31,7 @@ class PortalPanelProvider extends PanelProvider
             ->topNavigation()
             ->maxContentWidth(\Filament\Support\Enums\Width::SevenExtraLarge)
             ->tenant(School::class, slugAttribute: 'slug')
-            ->colors(['primary' => Color::Emerald])
+            ->colors(['primary' => '#047857'])
             ->pages([Beranda::class])
             ->middleware([
                 EncryptCookies::class,

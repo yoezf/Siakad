@@ -33,7 +33,7 @@ class SekolahPanelProvider extends PanelProvider
             ->tenant(School::class, slugAttribute: 'slug')
             ->tenantProfile(ProfilSekolah::class)
             ->colors([
-                'primary' => Color::Cyan,
+                'primary' => '#0e7490',
             ])
             ->discoverResources(in: app_path('Filament/Sekolah/Resources'), for: 'App\Filament\Sekolah\Resources')
             ->discoverPages(in: app_path('Filament/Sekolah/Pages'), for: 'App\Filament\Sekolah\Pages')

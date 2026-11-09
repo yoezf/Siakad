@@ -35,6 +35,8 @@ class StudentResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Siswa';
 
+    protected static ?string $navigationLabel = 'Siswa';
+
     protected static ?string $slug = 'siswa';
 
     /**

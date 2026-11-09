@@ -31,6 +31,8 @@ class AnnouncementResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Pengumuman';
 
+    protected static ?string $navigationLabel = 'Pengumuman';
+
     protected static ?string $slug = 'pengumuman';
 
     // Hak akses diatur oleh PengumumanPolicy.

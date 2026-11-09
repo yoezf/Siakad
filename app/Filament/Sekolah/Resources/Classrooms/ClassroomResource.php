@@ -32,6 +32,8 @@ class ClassroomResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Kelas';
 
+    protected static ?string $navigationLabel = 'Kelas';
+
     protected static ?string $slug = 'kelas';
 
     // Hak akses diatur oleh DataMasterPolicy. Siswa ditempatkan lewat menu Pembagian kelas.
