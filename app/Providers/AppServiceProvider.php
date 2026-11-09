@@ -1,0 +1,57 @@
+<?php
+
+namespace App\Providers;
+
+use App\Models\AcademicYear;
+use App\Models\AssessmentComponent;
+use App\Models\Classroom;
+use App\Models\Enrollment;
+use App\Models\Guardian;
+use App\Models\School;
+use App\Models\ScheduleEntry;
+use App\Models\Semester;
+use App\Models\Staff;
+use App\Models\Student;
+use App\Models\Subject;
+use App\Models\TeachingAssignment;
+use App\Models\TimeSlot;
+use App\Models\User;
+use App\Policies\DataMasterPolicy;
+use App\Policies\DataPribadiPolicy;
+use App\Policies\JadwalPolicy;
+use App\Policies\PenilaianPolicy;
+use App\Policies\SchoolPolicy;
+use App\Policies\StudentPolicy;
+use App\Policies\TahunAjaranPolicy;
+use App\Policies\UserPolicy;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\ServiceProvider;
+
+class AppServiceProvider extends ServiceProvider
+{
+    public function register(): void
+    {
+        //
+    }
+
+    public function boot(): void
+    {
+        // Filament memeriksa policy pada setiap aksi, bukan hanya menu. Tanpa policy, aksi yang dipanggil langsung lolos.
+        Gate::policy(School::class, SchoolPolicy::class);
+        Gate::policy(User::class, UserPolicy::class);
+        Gate::policy(AcademicYear::class, TahunAjaranPolicy::class);
+        Gate::policy(Semester::class, TahunAjaranPolicy::class);
+        Gate::policy(Student::class, StudentPolicy::class);
+        foreach ([Staff::class, Guardian::class, Enrollment::class] as $model) {
+            Gate::policy($model, DataPribadiPolicy::class);
+        }
+        foreach ([Subject::class, Classroom::class, TeachingAssignment::class] as $model) {
+            Gate::policy($model, DataMasterPolicy::class);
+        }
+        foreach ([TimeSlot::class, ScheduleEntry::class] as $model) {
+            Gate::policy($model, JadwalPolicy::class);
+        }
+        Gate::policy(AssessmentComponent::class, PenilaianPolicy::class);
+        Gate::policy(\App\Models\Announcement::class, \App\Policies\PengumumanPolicy::class);
+    }
+}
