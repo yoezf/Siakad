@@ -21,9 +21,11 @@ return [
     // Kunci hanya dari lingkungan server (.env), tidak pernah disimpan di database atau dikirim ke peramban.
     'gemini' => [
         'key' => env('GEMINI_API_KEY'),
-        'model' => env('GEMINI_MODEL', 'gemini-2.5-flash'),
+        'model' => env('GEMINI_MODEL', 'gemini-3.5-flash-lite'),
         'base_url' => env('GEMINI_BASE_URL', 'https://generativelanguage.googleapis.com/v1beta'),
         'timeout' => (int) env('GEMINI_TIMEOUT', 60),
+        // Opsional: jalur berkas sertifikat CA bila PHP tidak punya (galat cURL 60 di PHP Windows). Pemeriksaan SSL tetap aktif.
+        'ca_bundle' => env('GEMINI_CA_BUNDLE'),
     ],
 
     'resend' => [

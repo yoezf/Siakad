@@ -28,12 +28,11 @@ final class GeminiService
         $model = (string) config('services.gemini.model');
 
         try {
-            $res = Http::baseUrl(rtrim((string) config('services.gemini.base_url'), '/'))->withHeaders(['x-goog-api-key' => $kunci])->acceptJson()
+            $res = Http::baseUrl(rtrim((string) config('services.gemini.base_url'), '/'))->withHeaders(['x-goog-api-key' => $kunci])->withOptions(array_filter(['verify' => config('services.gemini.ca_bundle') ?: null]))->acceptJson()
                 ->connectTimeout(10)->timeout((int) config('services.gemini.timeout'))
                 ->post("/models/{$model}:generateContent", [
                     'contents' => [['role' => 'user', 'parts' => [['text' => Skema::prompt($jenis)], ['inline_data' => ['mime_type' => $mime, 'data' => base64_encode($gambar)]]]]],
-                    'generationConfig' => ['temperature' => 0.2, 'responseMimeType' => 'application/json', 'responseSchema' => Skema::skema($jenis), 'maxOutputTokens' => 4096,
-                        'thinkingConfig' => ['thinkingBudget' => 0]],
+                    'generationConfig' => ['temperature' => 0.2, 'responseMimeType' => 'application/json', 'responseSchema' => Skema::skema($jenis), 'maxOutputTokens' => 4096],
                 ]);
         } catch (ConnectionException) {
             throw new GeminiGagal('Tidak bisa terhubung ke layanan AI (jaringan atau waktu habis).', true);

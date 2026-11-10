@@ -13,12 +13,18 @@ Buka berkas `.env` di folder `sekolah-app` (bukan `.env.example`) dan isi atau t
 
 ```
 GEMINI_API_KEY=AIza...kunci-anda
-GEMINI_MODEL=gemini-2.5-flash
+GEMINI_MODEL=gemini-3.5-flash-lite
 AI_BATAS_HARIAN=10
 ```
 
-Catatan model: Google menyatakan `gemini-2.5-flash` deprecated; mulai 1 Desember 2026 permintaannya dialihkan ke `gemini-3.5-flash-lite`
-(tarif sama). Untuk memakai pengganti sekarang, ubah menjadi `GEMINI_MODEL=gemini-3.5-flash-lite` dan uji dengan foto asli.
+Catatan model: `gemini-2.5-flash` sudah deprecated dan **ditolak untuk kunci baru** (galat 404 "no longer available to new users").
+Gunakan `gemini-3.5-flash-lite` (pengganti resmi, tarif sama, sudah diuji dengan kunci asli). Daftar model yang tersedia untuk kunci Anda dapat dicek lewat AI Studio.
+
+Bila muncul galat SSL (cURL error 60, "unable to get local issuer certificate") karena PHP Windows tidak punya daftar sertifikat, isi jalur berkas
+sertifikat yang sudah ada di komputer, misalnya milik Herd:
+```
+GEMINI_CA_BUNDLE=C:/Users/NAMA/.config/herd/config/php/cacert.pem
+```
 
 Pilih cara memproses antrean:
 - **Paling sederhana (demo lokal):** ubah `QUEUE_CONNECTION=database` menjadi `QUEUE_CONNECTION=sync`. Unggahan langsung diproses; halaman menunggu beberapa detik.
@@ -57,6 +63,8 @@ Tips foto: telapak tangan terbuka, cahaya merata, garis tidak tertutup bayangan.
 | "Layanan AI sedang sibuk atau terbatas kuotanya" | Kuota paket gratis habis. Tunggu atau aktifkan penagihan. |
 | "Foto ditolak oleh filter keamanan" | Coba foto lain yang lebih jelas. |
 | Menunggu terus | `queue:work` belum berjalan, atau ganti ke `QUEUE_CONNECTION=sync`. |
+| "Tidak bisa terhubung ke layanan AI" | Kemungkinan galat SSL (isi `GEMINI_CA_BUNDLE`) atau tidak ada internet. |
+| "Layanan AI menolak permintaan" (400) atau 404 | Nama model salah atau model sudah tidak tersedia untuk kunci baru. Pakai `gemini-3.5-flash-lite`. |
 | Gagal tanpa pesan jelas | Lihat `storage/logs/laravel.log` dan jalankan `php artisan queue:failed`. |
 | Menu Analisis AI tidak muncul | Fitur belum dinyalakan untuk sekolah itu, atau akun bukan admin sekolah. |
 
