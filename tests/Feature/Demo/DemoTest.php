@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Demo;
 
+use App\Models\AiPrompt;
 use App\Models\Announcement;
 use App\Models\Classroom;
 use App\Models\ReportCard;
@@ -43,6 +44,21 @@ class DemoTest extends TestCase
         $this->periksa_akun_setiap_peran_masuk_ke_panel_yang_benar_dan_sandinya_sama();
         $this->periksa_orang_tua_dan_siswa_demo_hanya_melihat_data_miliknya();
         $this->periksa_data_sd_tidak_terlihat_dari_sekolah_smp();
+        $this->periksa_perintah_demo_periksa();
+    }
+
+    /** Perintah kesiapan harus lolos pada data demo utuh, dan gagal tegas bila data penting rusak. */
+    private function periksa_perintah_demo_periksa(): void
+    {
+        $this->artisan('demo:periksa')->expectsOutputToContain('Dua sekolah demo')->expectsOutputToContain('36 siswa')->assertSuccessful();
+
+        $sd = $this->sekolah_('SD Harapan Bangsa');
+        $sd->update(['features' => []]); // fitur AI mati: pemeriksaan wajib harus gagal
+        $this->artisan('demo:periksa')->expectsOutputToContain('pemeriksaan wajib gagal')->assertFailed();
+        $sd->update(['features' => ['ujian', 'tugas', 'analisis_ai']]);
+
+        User::where('email', 'ortu@harapanbangsa.demo')->update(['password' => bcrypt('bukan-sandi-demo-123')]);
+        $this->artisan('demo:periksa')->expectsOutputToContain('ortu@harapanbangsa.demo')->assertFailed();
     }
 
     private function sekolah_(string $nama): School
@@ -63,11 +79,13 @@ class DemoTest extends TestCase
                 $this->assertGreaterThan(20, ScheduleEntry::where('classroom_id', $k->id)->count(), "jadwal {$k->name} terisi");
             }
             $this->assertSame(5, Announcement::count());
+            $this->assertSame(3, AiPrompt::count(), 'prompt contoh untuk demo AI');
         });
         $this->untuk($smp, function () {
             $this->assertSame(['7A', '8A'], Classroom::orderBy('name')->pluck('name')->all());
             $this->assertSame(20, Student::count());
             $this->assertSame(2, Announcement::count());
+            $this->assertSame(0, AiPrompt::count());
         });
         $this->assertSame(['lengkap', 'lengkap'], [$sd->plan, $smp->plan]);
         $this->assertSame([70, 75], [(int) $sd->setting('kkm'), (int) $smp->setting('kkm')]);

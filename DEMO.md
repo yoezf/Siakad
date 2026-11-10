@@ -1,96 +1,150 @@
-# Naskah demo: Digital Student Portfolio
+# Naskah demo investor: Digital Student Portfolio
 
-Sistem rapor dan manajemen sekolah untuk banyak sekolah dalam satu platform. Demo ini memperlihatkan dua sekolah berbeda
-jenjang (SD dan SMP) yang datanya terpisah penuh, dengan akun untuk setiap peran.
+Sistem rapor dan manajemen sekolah untuk **banyak sekolah dalam satu platform**. Nama produk masih sementara.
+Demo ini berjalan lokal dengan data contoh (bukan data asli): dua sekolah berbeda jenjang, SD dan SMP, dengan akun untuk setiap peran.
 
-## Persiapan (sekali, sebelum demo)
+## Pesan inti (tiga kalimat)
+1. **Satu platform, banyak sekolah.** Tim pengembang mendaftarkan sekolah, dan data tiap sekolah terpisah penuh.
+2. **Nilai sampai rapor tanpa kertas dan tanpa salah hitung.** Guru mengisi nilai, sistem menghitung, kepala sekolah mengesahkan, rapor terkunci dan berversi, orang tua melihatnya di portal.
+3. **Dibangun bertahap dan diuji.** Aturan penting (hitungan nilai, kunci rapor, hak akses, pemisahan sekolah) dijaga ratusan uji otomatis. Fitur tambahan seperti analisis AI bisa dinyalakan per sekolah.
 
+---
+
+## A. Persiapan
+
+### H-1 atau pagi hari
 ```bash
-php artisan demo:isi --ya
+php artisan demo:isi --ya        # kosongkan database lalu isi data demo (sekitar 70 detik)
+php artisan demo:periksa --ai    # periksa kesiapan, termasuk uji nyata ke Gemini
 ```
+`demo:isi` **menghapus semua data di database lokal**, termasuk akun uji dan riwayat analisis AI Anda. `demo:periksa` hanya membaca dan menampilkan OK, PERLU, atau GAGAL.
+Bila ada GAGAL, perbaiki sebelum demo. Jika `demo:periksa --ai` gagal, bagian AI bisa dilewati (lihat bagian D).
 
-Perintah ini mengosongkan database lokal lalu mengisi data demo (sekitar 70 detik). Jalankan ulang kapan saja untuk
-mengembalikan keadaan awal setelah demo dicoret-coret. Server lokal: Laragon (MySQL) dan Herd (PHP) harus hidup.
+### 15 menit sebelum
+1. Pastikan Laragon (MySQL) hidup.
+2. Klik dua kali **`jalankan-lokal.bat`**. Dua jendela terbuka: server dan **Antrean AI**. Biarkan keduanya terbuka.
+3. Buka `http://127.0.0.1:8000`. Layar proyektor atau monitor: gunakan tema terang (menu pengguna, pojok kanan atas).
+4. Siapkan **dua jendela peramban**: satu memakai alamat `127.0.0.1:8000` dan satu memakai `localhost:8000`, supaya dua peran bisa login bersamaan tanpa saling keluar.
+5. Siapkan **foto telapak tangan** (milik Anda sendiri, di galeri atau HP) untuk segmen AI.
+6. Tutup aplikasi lain dan matikan notifikasi.
+7. Untuk demo di HP: jalankan **`jalankan-hp.bat`** dan buka alamat yang ditampilkan di HP (jaringan Wi-Fi yang sama). Jangan pakai jaringan umum.
 
-- Alamat panel sekolah: `http://127.0.0.1:8000/sekolah/sd-harapan-bangsa` (SMP: `.../sekolah/smp-cendekia-nusantara`)
-- Alamat portal orang tua dan siswa: `http://127.0.0.1:8000/portal/sd-harapan-bangsa`
-- Alamat Super Admin: `http://127.0.0.1:8000/admin`
-- Kata sandi semua akun demo: `demo-sekolah-2026`
+### Alamat dan akun
+Kata sandi semua akun demo ada di `database/seeders/DemoSeeder.php` (konstanta `SANDI`) dan dicetak oleh `demo:isi`.
 
-Tips: bila memakai dua peran bergantian, buka peran kedua lewat alamat `localhost:8000` (bukan `127.0.0.1`) atau jendela
-penyamaran, supaya sesi masuknya terpisah. Tampilan bawaan terang; ubah tema lewat menu pengguna bila perlu.
+| Tujuan | Alamat |
+|---|---|
+| Super Admin | `http://127.0.0.1:8000/admin` |
+| Panel SD | `http://127.0.0.1:8000/sekolah/sd-harapan-bangsa` |
+| Panel SMP | `http://127.0.0.1:8000/sekolah/smp-cendekia-nusantara` |
+| Portal orang tua dan siswa | `http://localhost:8000/portal/sd-harapan-bangsa` |
 
-## Akun demo
+| Peran | Email |
+|---|---|
+| Super Admin (tim platform) | `super@demo.test` |
+| Admin SD | `admin@harapanbangsa.demo` |
+| Kepala sekolah SD | `kepala@harapanbangsa.demo` |
+| Wali kelas 4A / 5A / 6A | `wali4a@`, `wali5a@`, `wali6a@harapanbangsa.demo` |
+| Guru Matematika | `gurumtk@harapanbangsa.demo` |
+| Staf TU | `tu@harapanbangsa.demo` |
+| Orang tua (anak di 6A dan 4A) | `ortu@harapanbangsa.demo` |
+| Siswa kelas 6A | `siswa@harapanbangsa.demo` |
+| Admin, kepala, orang tua SMP | `admin@`, `kepala@`, `ortu@cendekia.demo` |
 
-| Sekolah | Peran | Email |
-|---|---|---|
-| Platform | Super Admin | super@demo.test |
-| SD Harapan Bangsa | Admin sekolah | admin@harapanbangsa.demo |
-| SD Harapan Bangsa | Kepala sekolah | kepala@harapanbangsa.demo |
-| SD Harapan Bangsa | Wali kelas 4A / 5A / 6A | wali4a@, wali5a@, wali6a@harapanbangsa.demo |
-| SD Harapan Bangsa | Guru Matematika | gurumtk@harapanbangsa.demo |
-| SD Harapan Bangsa | Staf TU | tu@harapanbangsa.demo |
-| SD Harapan Bangsa | Orang tua (anak di 6A dan 4A) | ortu@harapanbangsa.demo |
-| SD Harapan Bangsa | Siswa kelas 6A | siswa@harapanbangsa.demo |
-| SMP Cendekia Nusantara | Admin / Kepala sekolah | admin@, kepala@cendekia.demo |
-| SMP Cendekia Nusantara | Wali kelas 7A / 8A, Orang tua | wali7a@, wali8a@, ortu@cendekia.demo |
+---
 
-## Alur demo (sekitar 10 menit)
+## B. Alur demo (sekitar 15 menit, AI opsional +3 menit)
 
-### 1. Satu platform, banyak sekolah (Super Admin, 1 menit)
-Masuk sebagai **super@demo.test** di `/admin`. Tunjukkan daftar sekolah, paket layanan, dan fitur yang bisa dinyalakan per
-sekolah. Pesan: tim pengembang mengelola platform; sekolah didaftarkan dan diatur dari sini; data tiap sekolah terpisah.
+| # | Waktu | Peran | Intinya |
+|---|---|---|---|
+| 1 | 1,5 mnt | Super Admin | Satu platform, banyak sekolah |
+| 2 | 2 mnt | Admin SD | Pengelola sekolah: dasbor, data, jadwal |
+| 3 | 3 mnt | Guru dan wali kelas | Nilai dan kelengkapan rapor |
+| 4 | 3 mnt | Kepala sekolah | Pengesahan, kunci, revisi berversi, PDF |
+| 5 | 2 mnt | Orang tua dan siswa | Portal |
+| 6 | 1,5 mnt | Admin SMP | Keterpisahan data |
+| 7 | +3 mnt | Admin SD | Analisis AI (opsional) |
 
-### 2. Pengelola sekolah (Admin SD, 2 menit)
-Masuk sebagai **admin@harapanbangsa.demo**.
-- **Dasbor:** ringkasan siswa, guru, kehadiran, rapor yang sudah disahkan.
-- **Data master > Siswa:** 36 siswa, impor dari Excel tersedia (tombol "Impor dari Excel").
-- **Jadwal > Tampilan mingguan:** jadwal per kelas atau per guru; sistem menolak jadwal yang bentrok.
-- **Penilaian > Komponen penilaian:** bobot bebas per sekolah (SMP memakai komponen berbeda).
+### 1. Satu platform, banyak sekolah (Super Admin)
+Login `super@demo.test` di `/admin`.
+- **Dasbor:** ringkasan lintas sekolah (sekolah aktif, jumlah siswa, pengguna, rapor terkunci, sekolah dengan AI).
+- **Daftar sekolah:** dua sekolah dengan paket dan status. Buka **Ubah** pada satu sekolah dan tunjukkan **fitur aktif** yang bisa dinyalakan per sekolah (Analisis AI menyala di SD, mati di SMP).
+- Katakan: "Tim kami mendaftarkan sekolah dan mengatur paket dari sini. Sekolah tidak melihat data sekolah lain."
 
-### 3. Guru dan wali kelas (3 menit)
-- Masuk sebagai **gurumtk@harapanbangsa.demo**: **Input nilai** hanya menampilkan mata pelajaran yang diampunya.
-  Isi satu nilai; nilai akhir dan predikat langsung terhitung. Nilai kosong dianggap belum dinilai, bukan nol.
-- Masuk sebagai **wali5a@harapanbangsa.demo**: **Rapor siswa**, kelas 5A. Semua rapor belum bisa disahkan karena nilai UAS
-  belum ada. Sistem menyebutkan nilai apa yang kurang.
-- Masuk sebagai **wali6a@harapanbangsa.demo**: kelas 6A lengkap. Tulis catatan wali kelas.
+### 2. Pengelola sekolah (Admin SD)
+Login `admin@harapanbangsa.demo`.
+- **Dasbor:** siswa aktif, guru, kehadiran, rapor yang sudah disahkan, pengumuman.
+- **Data master > Siswa:** 36 siswa dengan kelas dan NISN. Tunjukkan tombol **Impor dari Excel** (data sekolah nyata masuk lewat Excel).
+- **Jadwal > Tampilan mingguan:** jadwal per kelas atau per guru. Katakan: sistem menolak jadwal yang bentrok.
+- **Penilaian > Komponen penilaian:** bobot bebas per sekolah (SMP memakai komponen berbeda, KKM sekolah berbeda).
 
-### 4. Pengesahan dan revisi (Kepala sekolah, 2 menit)
-Masuk sebagai **kepala@harapanbangsa.demo** > **Rapor siswa** > kelas 6A.
-- Buka siswa yang berstatus Draf lengkap, klik **Sahkan rapor**; nilai dan kehadiran terkunci.
-- Buka siswa yang sudah disahkan, klik **Unduh PDF**. Tunjukkan kode verifikasi pada PDF.
-- Tunjukkan siswa yang **dalam revisi**: alasan wajib dicatat, hasil revisi menjadi versi baru, versi lama bertanda
-  "TIDAK BERLAKU". Riwayat tidak pernah ditimpa.
-- **Laporan akademik:** rekap nilai dan rekap kehadiran per kelas, unduh PDF atau Excel.
+### 3. Guru dan wali kelas
+- Login `gurumtk@harapanbangsa.demo` > **Input nilai:** hanya mata pelajaran yang ia ampu. Isi satu nilai; nilai akhir dan predikat langsung terhitung. Katakan: kolom kosong berarti belum dinilai, bukan nol.
+- Login `wali5a@harapanbangsa.demo` (jendela kedua) > **Rapor siswa**, kelas 5A: tidak ada yang bisa disahkan karena nilai UAS belum ada, dan sistem menyebutkan nilai apa yang kurang.
+- Login `wali6a@harapanbangsa.demo` > kelas 6A lengkap. Tulis satu **catatan wali kelas**.
 
-### 5. Orang tua dan siswa (2 menit)
-Buka `/portal/sd-harapan-bangsa` (jendela baru) sebagai **ortu@harapanbangsa.demo**.
-- Dua anak (6A dan 4A) dalam satu akun; ganti anak lewat pilihan di atas.
+### 4. Pengesahan dan revisi (Kepala sekolah)
+Login `kepala@harapanbangsa.demo` > **Rapor siswa** > kelas 6A.
+- Buka siswa berstatus Draf yang lengkap, klik **Sahkan rapor**. Nilai, kehadiran, dan catatan **terkunci**.
+- Buka siswa yang sudah disahkan, klik **Unduh PDF**, tunjukkan kode verifikasi. Salinan rapor yang diubah di luar sistem terdeteksi.
+- Tunjukkan siswa yang **dalam revisi**: alasan wajib dicatat, hasil revisi menjadi versi baru, versi lama bertanda "TIDAK BERLAKU". Katakan: riwayat tidak pernah ditimpa.
+- **Rapor > Laporan akademik:** rekap nilai dan kehadiran per kelas, unduh **PDF** dan **Excel**.
+
+### 5. Orang tua dan siswa (portal)
+Jendela dengan alamat `localhost:8000`. Login `ortu@harapanbangsa.demo`.
+- Satu akun, dua anak (6A dan 4A): ganti anak lewat pilihan di atas.
 - Tab **Rapor** (hanya yang sudah disahkan, bisa diunduh), **Nilai**, **Kehadiran**, **Jadwal**, **Pengumuman**.
-- Masuk sebagai **siswa@harapanbangsa.demo**: hanya melihat dirinya sendiri.
+- Login `siswa@harapanbangsa.demo`: hanya melihat dirinya sendiri.
+- Buka di HP bila memungkinkan: tampilannya menyesuaikan layar.
 
-### 6. Keamanan dan keterpisahan data (kapan saja, 1 menit)
-- Masuk sebagai **admin@cendekia.demo** (SMP): tidak ada satu pun data SD yang terlihat.
-- Orang tua tidak bisa membuka panel sekolah, dan staf tidak bisa membuka portal.
-- Setiap unduhan laporan dan setiap perubahan nilai tercatat (siapa, kapan, nilai lama dan baru).
+### 6. Keterpisahan data (Admin SMP)
+Login `admin@cendekia.demo`: tidak ada satu pun data SD yang terlihat, dan menu **Analisis AI tidak muncul** (fitur mati untuk SMP).
+Katakan: "Pemisahan dijaga di database dan di kode, dan diuji otomatis."
 
-### 7. Modul Analisis AI (opsional, hanya SD demo)
-Menu **Analisis AI** (Palmistry, Physiognomy, Riwayat, Statistik) hanya muncul di sekolah yang fiturnya dinyalakan Super Admin; di data demo hanya SD Harapan Bangsa.
-- Tunjukkan peringatan "hanya untuk hiburan", kotak persetujuan, dan pernyataan 18 tahun ke atas yang wajib sebelum foto diunggah.
-- Tanpa kunci Gemini, unggahan akan berstatus gagal dengan pesan jelas. Untuk analisis sungguhan: isi `GEMINI_API_KEY` di `.env`, lalu jalankan `php artisan queue:work` di terminal terpisah (atau set `QUEUE_CONNECTION=sync` untuk demo lokal).
-- Gunakan foto dewasa yang setuju (mis. tim sendiri), jangan foto siswa. Hapus foto dan hasil lewat tombol di kartu hasil.
-- Data demo menyertakan satu analisis contoh palsu (bukan hasil Gemini) bila dibuat manual; data baru dari `demo:isi` tidak memuatnya.
+### 7. Analisis AI (opsional, hanya SD)
+Login `admin@harapanbangsa.demo` > grup menu **Analisis AI**.
+- **Prompt Kustom:** sudah ada tiga prompt contoh. Tunjukkan bahwa pengguna bisa menulis dan menyimpan prompt sendiri.
+- **Analisis dengan Prompt:** pilih **Palmistry gaya chat**, klik **Ambil foto (kamera)** atau **Pilih dari galeri**, pilih foto telapak tangan Anda, centang pernyataan dan persetujuan, lalu **Analisis foto**. Hasil muncul sekitar 4 sampai 15 detik.
+- **Palmistry Analysis:** versi terstruktur: status keterbacaan per garis, area deteksi di atas foto, dan JSON. Katakan: garis yang tidak terlihat tidak dikarang.
+- **Riwayat** dan **Statistik:** semua tercatat; foto dan hasil bisa dihapus kapan saja.
+- Katakan dengan jelas: ini **fitur hiburan dan bukan penilaian ilmiah**. Mati bawaan, dinyalakan per sekolah, hanya admin yang bisa memakai, memerlukan persetujuan, dan jawaban yang menyimpulkan kecerdasan, penyakit, suku, atau nasib dari wajah disaring.
+- Gunakan **foto Anda sendiri atau orang dewasa yang setuju**, jangan foto siswa.
 
-## Pertanyaan yang mungkin muncul
+---
 
-- **Android dan mode offline?** Direncanakan sebagai tahap berikutnya; saat ini berupa aplikasi web yang nyaman di ponsel.
-- **Siapa pemilik data?** Sekolah. Pengembang mengelola platform; pembagian tanggung jawab diatur dalam kontrak
-  (ditinjau ahli hukum sebelum peluncuran).
-- **Kurikulum?** Bebas diatur sekolah (bawaan Kurikulum Merdeka); KKM, komponen, dan bobot per sekolah.
-- **Pengujian?** Ratusan uji otomatis menjaga aturan penting: perhitungan nilai, kunci rapor, hak akses, pemisahan sekolah.
+## C. Pertanyaan yang mungkin muncul dan jawaban jujur
 
-## Batasan yang jujur disampaikan
+| Pertanyaan | Jawaban |
+|---|---|
+| Aplikasi Android dan mode offline? | Direncanakan sebagai tahap berikutnya, belum dikerjakan. Saat ini web yang nyaman di ponsel. |
+| Siapa pemilik data? | Sekolah. Pengembang mengelola platform. Pembagian tanggung jawab akan diatur dalam kontrak. Tinjauan hukum belum dilakukan. |
+| Bagaimana keamanan? | Data sekolah dipisah di database dan kode, hak akses per peran, kunci rapor berversi dengan sidik, log audit perubahan nilai. Semuanya diuji otomatis. Belum ada audit keamanan pihak ketiga. |
+| Berapa biaya AI? | Terukur sekitar Rp 25 sampai Rp 50 per analisis (Gemini). Ada batas harian per sekolah. Bisa dimatikan per sekolah. |
+| Apakah foto siswa dipakai? | Tidak. Modul AI ditujukan untuk dewasa yang setuju, dan hasilnya tidak boleh dipakai untuk menilai siswa atau pegawai. |
+| Kurikulum? | Bebas diatur sekolah (bawaan Kurikulum Merdeka). KKM, komponen, dan bobot per sekolah. |
+| Bisa diimpor dari data lama? | Ya, ada impor dari Excel (tombol di menu Siswa), lengkap dengan templat dan pemeriksaan data. |
+| Berapa banyak uji? | Lebih dari 670 uji otomatis. Aturan penting juga diuji dengan "merusak kode sengaja" untuk memastikan uji benar-benar menangkap kesalahan. |
 
-- Belum ada: aplikasi Android, mode offline, notifikasi, ujian dan tugas dalam aplikasi, keuangan atau SPP.
-- Belum ada fitur lupa kata sandi lewat email; kata sandi diatur ulang oleh admin sekolah.
-- Peringkat siswa dan deskripsi capaian per mata pelajaran belum ada.
+## D. Batasan yang disampaikan jujur
+- Belum ada: aplikasi Android, mode offline, notifikasi, ujian dan tugas dalam aplikasi, keuangan atau SPP, lupa kata sandi lewat email.
+- Belum ada: peringkat siswa, deskripsi capaian per mata pelajaran.
+- Berjalan lokal untuk demo; server produksi, HTTPS, dan cadangan data terjadwal belum disiapkan.
+- AI: hasil palmistri dan fisiognomi adalah tafsir tradisi untuk hiburan; kualitas bergantung pada foto dan model.
+
+## E. Bila ada yang macet saat demo
+
+| Gejala | Tindakan cepat |
+|---|---|
+| Halaman lambat (sekitar 1 detik per klik) | Server tidak dijalankan lewat `jalankan-lokal.bat`. Hentikan, lalu jalankan lewat skrip itu. |
+| Analisis AI "Menunggu" lebih dari 90 detik | Jendela **Antrean AI** tertutup. Buka `jalankan-lokal.bat` lagi, lalu klik **Coba lagi**. |
+| Analisis AI gagal (kuota atau jaringan) | Lewati segmen AI. Katakan: "Ini bergantung layanan eksternal." Tunjukkan Riwayat dan Statistik dari data yang ada. |
+| Foto ditolak oleh Gemini | Pakai foto lain (tangan, benda), atau lewati. |
+| Data demo kacau karena dicoba-coba | `php artisan demo:isi --ya` (70 detik), lalu mulai ulang dari awal. |
+| Lupa kata sandi atau akun hilang | `php artisan demo:isi --ya` mengembalikan semuanya. |
+| Tidak ada internet | Semua bagian jalan, kecuali analisis AI. |
+| Login saling keluar antar peran | Pakai dua alamat berbeda (`127.0.0.1` dan `localhost`) atau jendela penyamaran. |
+
+## F. Setelah demo
+- Hapus foto dan hasil lewat tombol di kartu hasil atau di **Riwayat Analisis**.
+- Tutup jendela server dan **Antrean AI**. Bila memakai `jalankan-hp.bat`, hentikan sebelum meninggalkan jaringan itu.
+- Hapus akun uji dengan kata sandi sederhana, jika ada (`demo:periksa` mengingatkan).

@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\AcademicYear;
+use App\Models\AiPrompt;
 use App\Models\Announcement;
 use App\Models\AssessmentComponent;
 use App\Models\Classroom;
@@ -166,6 +167,16 @@ class DemoSeeder extends Seeder
             ['Lomba Menggambar Antar Sekolah', 'Pendaftaran lomba menggambar dibuka sampai akhir bulan. Daftarkan diri melalui wali kelas.', 'siswa', 'terbit'],
             ['Jadwal Ujian Akhir Semester (draf)', 'Jadwal masih disusun dan akan diumumkan setelah rapat guru.', 'semua', 'draf'],
         ]);
+
+        // Prompt contoh untuk menu Analisis dengan Prompt (hanya SD, tempat fitur analisis_ai menyala).
+        foreach ([
+            ['Deskripsi benda di foto', 'Sebutkan semua benda yang terlihat di foto beserta warna dan posisinya (kiri, tengah, atau kanan). Jawab dalam poin-poin singkat.'],
+            ['Baca tulisan di foto', 'Baca semua tulisan yang terlihat di foto dan tuliskan ulang apa adanya. Bila ada bagian yang tidak terbaca, tulis [tidak terbaca]. Jangan menambah kata.'],
+            ['Palmistry gaya chat', "Analisis foto telapak tangan ini seperti seorang ahli palmistri. Jelaskan secara berurutan garis kehidupan, garis kepala, garis hati, serta bentuk telapak dan jari. "
+                ."Untuk tiap bagian tulis letaknya, tampilannya di foto, dan makna tradisionalnya. Gunakan bahasa Indonesia yang ramah dalam bentuk poin-poin, dan akhiri dengan catatan bahwa ini tafsir tradisi, bukan sains."],
+        ] as [$nama, $isi]) {
+            (new AiPrompt(['name' => $nama, 'body' => $isi]))->forceFill(['created_by' => $admin->id])->save();
+        }
     }
 
     private function smp(): void
