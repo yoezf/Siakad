@@ -2,7 +2,7 @@
 @php($r = $a->result)
 @php($sibuk = in_array($a->status, ['menunggu', 'diproses'], true))
 @php($kelas = ['terlihat_jelas' => 'ui-badge', 'terlihat_samar' => 'ui-badge ui-badge-warn', 'tidak_terlihat' => 'ui-badge ui-badge-mute'])
-<div class="ui-card" data-testid="hasil-ai" @if ($sibuk) wire:poll.4s @endif>
+<div class="ui-card" data-testid="hasil-ai" @if ($sibuk) wire:poll.2s @endif>
     <h3 class="ui-title">{{ \App\Models\AiAnalysis::TYPE[$a->type] }}: {{ $a->subject_name }}</h3>
     <div class="ui-sub">
         {{ $a->created_at->format('d-m-Y H:i') }} &middot; oleh {{ $a->author?->name ?? '-' }} &middot;
@@ -11,7 +11,8 @@
     </div>
 
     @if ($sibuk)
-        <div class="ui-alert ui-alert-info" style="margin-top:.75rem">Foto sedang dianalisis. Halaman ini diperbarui otomatis.</div>
+        <div class="ui-alert ui-alert-info ui-proses" style="margin-top:.75rem" data-testid="proses-ai"><span class="ui-spin" aria-hidden="true"></span>
+            <span>Foto sedang dianalisis, {{ max(0, now()->timestamp - $a->created_at->timestamp) }} detik berjalan (biasanya 5 sampai 15 detik). Halaman ini diperbarui otomatis, tidak perlu dimuat ulang.</span></div>
     @elseif ($a->status === 'gagal')
         <div class="ui-alert ui-alert-danger" style="margin-top:.75rem"><strong>Analisis gagal.</strong> {{ $a->error }}</div>
     @elseif ($r)

@@ -6,7 +6,7 @@
             <h3 class="ui-title">{{ $this->jenis() === 'palmistry' ? 'Unggah foto telapak tangan' : 'Unggah foto wajah tampak depan' }}</h3>
             <p class="ui-sub" style="margin-bottom:1rem">
                 {{ $this->jenis() === 'palmistry' ? 'Telapak tangan kanan atau kiri, terbuka, cahaya cukup, garis tidak tertutup bayangan.' : 'Satu wajah menghadap lurus ke kamera, cahaya merata, tanpa kacamata atau penutup wajah.' }}
-                JPG, PNG, atau WEBP, maksimal 5 MB.
+                JPG, PNG, atau WEBP, maksimal 10 MB.
             </p>
 
             <div class="ui-form">
@@ -31,7 +31,7 @@
             <label class="ui-check"><input type="checkbox" wire:model="setuju" aria-label="Persetujuan pemrosesan foto"> {{ $this->teksPersetujuan() }}</label>
 
             <div class="ui-bar" style="margin:1rem 0 0">
-                <button type="button" class="ui-btn ui-btn-primary" wire:click="kirim" wire:loading.attr="disabled" wire:target="kirim,foto">Analisis foto</button>
+                <button type="button" class="ui-btn ui-btn-primary" wire:click="kirim" wire:loading.attr="disabled" wire:target="kirim,foto"><span wire:loading.remove wire:target="kirim">Analisis foto</span><span wire:loading wire:target="kirim">Menganalisis foto... mohon tunggu</span></button>
             </div>
         </div>
     @endif

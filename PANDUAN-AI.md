@@ -2,6 +2,17 @@
 
 Untuk demo atau uji lokal. Biaya perkiraan: sekitar Rp 50 per analisis (paket berbayar) atau Rp 0 (paket gratis, dengan catatan data).
 
+## 0. Jalankan server lokal yang cepat (sangat disarankan)
+PHP bawaan Windows tidak mengaktifkan OPcache, sehingga setiap halaman terasa lambat (sekitar 1 detik per klik). Batas unggah bawaannya juga hanya 2 MB dan memori 128 MB,
+padahal foto HP 3 sampai 8 MB. Proyek ini menyertakan pengaturan khusus (`.php/lokal.ini`) yang tidak mengubah `php.ini` sistem.
+
+1. Hentikan server lama (tutup jendela terminal tempat `php artisan serve` berjalan).
+2. Klik dua kali **`jalankan-lokal.bat`** di folder `sekolah-app`. Ia membuka dua jendela: server aplikasi dan **Antrean AI**. Biarkan keduanya terbuka.
+3. Buka `http://127.0.0.1:8000`. Halaman kini sekitar 4 sampai 5 kali lebih cepat (sekitar 0,3 detik, dari 1,2 detik).
+
+Dengan cara ini antrean berjalan di jendela Antrean AI (`QUEUE_CONNECTION=database`), jadi tombol **Analisis foto** langsung kembali dan hasil muncul sendiri
+dalam sekitar 5 sampai 15 detik. Tidak perlu `QUEUE_CONNECTION=sync`.
+
 ## 1. Dapatkan kunci Gemini
 1. Buka https://aistudio.google.com dan masuk dengan akun Google.
 2. Pilih **Get API key** lalu **Create API key**. Salin kuncinya.
@@ -27,7 +38,7 @@ GEMINI_CA_BUNDLE=C:/Users/NAMA/.config/herd/config/php/cacert.pem
 ```
 
 Pilih cara memproses antrean:
-- **Paling sederhana (demo lokal):** ubah `QUEUE_CONNECTION=database` menjadi `QUEUE_CONNECTION=sync`. Unggahan langsung diproses; halaman menunggu beberapa detik.
+- **Tanpa jalankan-lokal.bat:** ubah `QUEUE_CONNECTION=database` menjadi `QUEUE_CONNECTION=sync`. Unggahan langsung diproses; halaman menunggu beberapa detik.
 - **Seperti produksi:** biarkan `database` dan jalankan pekerja di terminal terpisah (lihat langkah 3).
 
 ## 3. Terapkan dan jalankan
@@ -53,7 +64,7 @@ Pastikan juga MySQL (Laragon) hidup dan server aplikasi berjalan.
 3. Isi nama orang yang difoto dan nama pemberi persetujuan, centang pernyataan 18 tahun ke atas dan persetujuan, pilih foto, lalu klik **Analisis foto**.
 4. Status berubah: Menunggu, Diproses, Selesai. Hasil muncul di bawah formulir dan di **Riwayat Analisis**.
 
-Tips foto: telapak tangan terbuka, cahaya merata, garis tidak tertutup bayangan. Wajah menghadap lurus, tanpa kacamata atau penutup. JPG, PNG, atau WEBP, maksimal 5 MB.
+Tips foto: telapak tangan terbuka, cahaya merata, garis tidak tertutup bayangan. Wajah menghadap lurus, tanpa kacamata atau penutup. JPG, PNG, atau WEBP, maksimal 10 MB.
 
 ## 6. Bila bermasalah
 | Gejala | Penyebab dan tindakan |
@@ -62,7 +73,8 @@ Tips foto: telapak tangan terbuka, cahaya merata, garis tidak tertutup bayangan.
 | "Kunci API Gemini ditolak" | Kunci salah atau dicabut. Buat ulang di AI Studio. |
 | "Layanan AI sedang sibuk atau terbatas kuotanya" | Kuota paket gratis habis. Tunggu atau aktifkan penagihan. |
 | "Foto ditolak oleh filter keamanan" | Coba foto lain yang lebih jelas. |
-| Menunggu terus | `queue:work` belum berjalan, atau ganti ke `QUEUE_CONNECTION=sync`. |
+| Menunggu terus | Jendela **Antrean AI** (`jalankan-lokal.bat`) tidak berjalan atau tertutup. |
+| Unggah foto gagal atau halaman error 500 | Server dijalankan tanpa `jalankan-lokal.bat`, jadi batas unggah 2 MB dan memori 128 MB berlaku. Jalankan lewat skrip itu. |
 | "Tidak bisa terhubung ke layanan AI" | Kemungkinan galat SSL (isi `GEMINI_CA_BUNDLE`) atau tidak ada internet. |
 | "Layanan AI menolak permintaan" (400) atau 404 | Nama model salah atau model sudah tidak tersedia untuk kunci baru. Pakai `gemini-3.5-flash-lite`. |
 | Gagal tanpa pesan jelas | Lihat `storage/logs/laravel.log` dan jalankan `php artisan queue:failed`. |

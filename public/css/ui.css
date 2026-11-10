@@ -127,3 +127,9 @@
 .ui-bar-baris { display: grid; grid-template-columns: 3rem 1fr 2rem; align-items: center; gap: .6rem; font-size: .8125rem; }
 .ui-bar-isi { display: block; height: .6rem; border-radius: 999px; background: var(--ui-soft); overflow: hidden; }
 .ui-bar-isi i { display: block; height: 100%; background: var(--ui-accent); border-radius: 999px; }
+
+/* ---------- indikator proses ---------- */
+.ui-proses { display: flex; align-items: center; gap: .65rem; }
+.ui-spin { flex: none; width: 1rem; height: 1rem; border: 2px solid currentColor; border-right-color: transparent; border-radius: 50%; animation: ui-putar .8s linear infinite; }
+@keyframes ui-putar { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .ui-spin { animation-duration: 3s; } }

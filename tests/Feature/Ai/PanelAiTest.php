@@ -75,7 +75,7 @@ class PanelAiTest extends AiTestCase
         $a = AiAnalysis::first();
         $this->assertSame(['palmistry', 'menunggu'], [$a->type, $a->status]);
         $this->assertSame($a->id, $k->instance()->analisis()->id);
-        $k->assertSeeHtml('wire:poll.4s');
+        $k->assertSeeHtml('wire:poll.2s');
     }
 
     public function test_formulir_physiognomy_membuat_jenis_wajah(): void
@@ -130,7 +130,7 @@ class PanelAiTest extends AiTestCase
             ->assertSee('Telapak tangan kanan dengan tiga garis utama yang terlihat.')->assertSee('Keterbacaan gambar:')->assertSeeHtml('<strong>Baik</strong>')
             ->assertSee('Tidak terdeteksi: Garis nasib')->assertSee('Foto diambil dari atas.')->assertSee('Catatan keterbatasan analisis')
             ->assertSee('interpretasi tradisional atau budaya')->assertSeeHtml('data-testid="json-ai"')->assertSeeHtml('data-testid="foto-ai"')
-            ->assertDontSeeHtml('wire:poll.4s');
+            ->assertDontSeeHtml('wire:poll.2s');
         $k->assertSeeHtml('top:12%; left:8%; height:82%; width:82%');
         $k->assertSeeInOrder(['Garis kehidupan', 'Garis kepala', 'Garis hati', 'Garis nasib', 'Bentuk telapak tangan', 'Bentuk jari']); // urutan baku, bukan urutan kunci JSON MySQL
     }

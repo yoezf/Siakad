@@ -19,7 +19,7 @@ use Illuminate\Validation\ValidationException;
  */
 final class BuatAnalisis
 {
-    public const MAKS_BYTE = 5 * 1024 * 1024;
+    public const MAKS_BYTE = 10 * 1024 * 1024; // foto HP 3-8 MB; toh diperkecil sebelum disimpan dan dikirim
 
     public const MAKS_SISI = 1600;
 
@@ -67,12 +67,28 @@ final class BuatAnalisis
         return $a;
     }
 
+    /** Memori yang dibutuhkan GD: gambar terurai (4 byte per piksel) ditambah salinan saat diputar dan diperkecil, plus ruang aplikasi. */
+    public static function memoriDibutuhkan(int $lebar, int $tinggi): int
+    {
+        return (int) ($lebar * $tinggi * 4 * 2.5) + 64 * 1024 * 1024;
+    }
+
+    /** Foto HP 12 megapiksel butuh sekitar 100 MB; batas bawaan PHP 128 MB sudah terpakai aplikasi. Dinaikkan seperlunya, paling banyak 768 MB. */
+    private static function naikkanMemori(int $lebar, int $tinggi): void
+    {
+        $batas = ini_parse_quantity((string) ini_get('memory_limit'));
+        $perlu = memory_get_usage() + self::memoriDibutuhkan($lebar, $tinggi);
+        if ($batas > 0 && $batas < $perlu) {
+            ini_set('memory_limit', (string) min($perlu, 768 * 1024 * 1024));
+        }
+    }
+
     /** Memeriksa dan membersihkan foto; hasilnya JPEG tanpa metadata dengan sisi terpanjang paling banyak 1600 piksel. */
     private static function siapkanFoto(UploadedFile $foto): string
     {
         $salah = fn (string $pesan) => ValidationException::withMessages(['foto' => $pesan]);
         if (! $foto->isValid() || ($foto->getSize() ?: 0) > self::MAKS_BYTE) {
-            throw $salah('Foto tidak valid atau lebih dari 5 MB.');
+            throw $salah('Foto tidak valid atau lebih dari 10 MB.');
         }
         $isi = (string) file_get_contents($foto->getRealPath());
         $mime = (new \finfo(FILEINFO_MIME_TYPE))->buffer($isi);
@@ -87,26 +103,33 @@ final class BuatAnalisis
         if ($lebar * $tinggi > 40_000_000) {
             throw $salah('Resolusi foto terlalu besar.'); // mencegah bom dekompresi
         }
-        $gambar = @imagecreatefromstring($isi);
-        if (! $gambar) {
-            throw $salah('Foto tidak bisa dibaca.');
-        }
-        if ($mime === 'image/jpeg' && function_exists('exif_read_data')) {
-            $putar = [3 => 180, 6 => -90, 8 => 90][(int) (@exif_read_data('data://image/jpeg;base64,'.base64_encode($isi))['Orientation'] ?? 1)] ?? 0;
-            if ($putar !== 0) {
-                $gambar = imagerotate($gambar, $putar, 0) ?: $gambar; // foto ponsel sering tersimpan menyamping lewat EXIF
+        $batasAsal = ini_get('memory_limit');
+        self::naikkanMemori($lebar, $tinggi);
+        try {
+            $gambar = @imagecreatefromstring($isi);
+            if (! $gambar) {
+                throw $salah('Foto tidak bisa dibaca.');
             }
-        }
-        $skala = min(1, self::MAKS_SISI / max(imagesx($gambar), imagesy($gambar)));
-        if ($skala < 1) {
-            $gambar = imagescale($gambar, (int) round(imagesx($gambar) * $skala), (int) round(imagesy($gambar) * $skala)) ?: $gambar;
-        }
-        $putih = imagecreatetruecolor(imagesx($gambar), imagesy($gambar)); // latar putih untuk PNG transparan
-        imagefill($putih, 0, 0, imagecolorallocate($putih, 255, 255, 255));
-        imagecopy($putih, $gambar, 0, 0, 0, 0, imagesx($gambar), imagesy($gambar));
-        ob_start();
-        imagejpeg($putih, null, 85);
+            if ($mime === 'image/jpeg' && function_exists('exif_read_data')) {
+                $putar = [3 => 180, 6 => -90, 8 => 90][(int) (@exif_read_data('data://image/jpeg;base64,'.base64_encode($isi))['Orientation'] ?? 1)] ?? 0;
+                if ($putar !== 0) {
+                    $gambar = imagerotate($gambar, $putar, 0) ?: $gambar; // foto ponsel sering tersimpan menyamping lewat EXIF
+                }
+            }
+            $skala = min(1, self::MAKS_SISI / max(imagesx($gambar), imagesy($gambar)));
+            if ($skala < 1) {
+                $gambar = imagescale($gambar, (int) round(imagesx($gambar) * $skala), (int) round(imagesy($gambar) * $skala)) ?: $gambar;
+            }
+            $putih = imagecreatetruecolor(imagesx($gambar), imagesy($gambar)); // latar putih untuk PNG transparan
+            imagefill($putih, 0, 0, imagecolorallocate($putih, 255, 255, 255));
+            imagecopy($putih, $gambar, 0, 0, 0, 0, imagesx($gambar), imagesy($gambar));
+            ob_start();
+            imagejpeg($putih, null, 85);
 
-        return (string) ob_get_clean();
+            return (string) ob_get_clean();
+        } finally {
+            $gambar = $putih = null; // bebaskan gambar GD dulu: PHP menolak menurunkan batas di bawah pemakaian saat ini
+            @ini_set('memory_limit', (string) $batasAsal); // kenaikan hanya untuk pengolahan satu foto ini
+        }
     }
 }
