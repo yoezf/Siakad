@@ -13,6 +13,20 @@ padahal foto HP 3 sampai 8 MB. Proyek ini menyertakan pengaturan khusus (`.php/l
 Dengan cara ini antrean berjalan di jendela Antrean AI (`QUEUE_CONNECTION=database`), jadi tombol **Analisis foto** langsung kembali dan hasil muncul sendiri
 dalam sekitar 5 sampai 15 detik. Tidak perlu `QUEUE_CONNECTION=sync`.
 
+## 0b. Membuka dari HP (jaringan Wi-Fi yang sama)
+1. Klik dua kali **`jalankan-hp.bat`** (bukan `jalankan-lokal.bat`). Ia menampilkan alamat seperti `http://192.168.1.19:8080/sekolah/login`.
+2. Pastikan HP tersambung ke **Wi-Fi yang sama** dengan komputer.
+3. Buka alamat itu di peramban HP dan login seperti biasa.
+4. Untuk analisis AI: buka menu Analisis AI, pada kolom **Foto** pilih **Kamera** untuk memotret langsung, atau pilih dari galeri.
+
+Peringatan: siapa pun di jaringan yang sama bisa membuka aplikasi selama skrip berjalan, dan akun demo memakai kata sandi yang diketahui. Pakai hanya di jaringan tepercaya,
+tanpa data asli, lalu tutup kedua jendela setelah selesai.
+
+Jika HP tidak bisa membuka alamat itu:
+- Windows menanyakan "Allow access" untuk php.exe: pilih **Allow** (jaringan Private dan Public).
+- Router atau Wi-Fi kantor kadang mengaktifkan **AP/client isolation** yang melarang perangkat saling terhubung. Coba hotspot HP Anda sendiri atau jaringan rumah.
+- Pastikan komputer dan HP tidak memakai VPN.
+
 ## 1. Dapatkan kunci Gemini
 1. Buka https://aistudio.google.com dan masuk dengan akun Google.
 2. Pilih **Get API key** lalu **Create API key**. Salin kuncinya.
