@@ -2,6 +2,7 @@
 
 namespace App\Filament\Sekolah\Support;
 
+use App\Jobs\ProsesAnalisisAi;
 use App\Models\AiAnalysis;
 use Filament\Notifications\Notification;
 use Illuminate\Support\Facades\Gate;
@@ -35,6 +36,25 @@ trait KelolaAnalisisAi
         }
         $a->hapusFoto();
         Notification::make()->success()->title('Foto dihapus. Hasil analisis tetap tersimpan.')->send();
+    }
+
+    /** Memproses ulang analisis yang gagal atau macet memakai foto yang masih tersimpan (tanpa mengunggah ulang). */
+    public function ulangi(int $id): void
+    {
+        $a = AiAnalysis::find($id);
+        if (! $a || ! Gate::allows('delete', $a)) {
+            Notification::make()->danger()->title('Analisis tidak ditemukan atau Anda tidak berhak memprosesnya.')->send();
+
+            return;
+        }
+        if ($a->status === 'selesai' || ! $a->adaFoto()) {
+            Notification::make()->danger()->title($a->status === 'selesai' ? 'Analisis ini sudah selesai.' : 'Foto sudah dihapus, jadi tidak bisa diulang. Unggah foto lagi.')->send();
+
+            return;
+        }
+        AiAnalysis::whereKey($a->id)->update(['status' => 'menunggu', 'error' => null, 'updated_at' => now()]);
+        ProsesAnalisisAi::dispatch($a->id)->afterCommit();
+        Notification::make()->success()->title('Analisis dikirim ulang ke antrean.')->send();
     }
 
     public function hapusAnalisis(int $id): void

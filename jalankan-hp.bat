@@ -14,5 +14,5 @@ echo      http://%IP%:8080/sekolah/login
 echo.
 echo  Jangan tutup dua jendela ini selama dipakai.
 echo.
-start "Antrean AI (jangan ditutup)" cmd /k php artisan queue:work --sleep=1 --tries=3
+start "Antrean AI (jangan ditutup)" cmd /k php artisan queue:listen --sleep=1 --tries=3 --timeout=150
 php artisan serve --host=0.0.0.0 --port=8080

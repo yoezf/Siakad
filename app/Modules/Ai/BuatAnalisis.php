@@ -4,6 +4,7 @@ namespace App\Modules\Ai;
 
 use App\Jobs\ProsesAnalisisAi;
 use App\Models\AiAnalysis;
+use App\Models\AiPrompt;
 use App\Models\User;
 use App\Support\Tenancy\CurrentSchool;
 use Illuminate\Auth\Access\AuthorizationException;
@@ -24,7 +25,7 @@ final class BuatAnalisis
     public const MAKS_SISI = 1600;
 
     /** @param  array{subject_name?: mixed, consent_name?: mixed, consent_relation?: mixed, setuju?: mixed, dewasa?: mixed}  $persetujuan */
-    public static function handle(User $oleh, string $jenis, UploadedFile $foto, array $persetujuan): AiAnalysis
+    public static function handle(User $oleh, string $jenis, UploadedFile $foto, array $persetujuan, ?AiPrompt $prompt = null): AiAnalysis
     {
         if ($oleh->school_id === null || CurrentSchool::id() !== $oleh->school_id) {
             throw new AuthorizationException('Anda tidak berhak membuat analisis di sekolah ini.');
@@ -33,6 +34,12 @@ final class BuatAnalisis
 
         if (! array_key_exists($jenis, AiAnalysis::TYPE)) {
             throw ValidationException::withMessages(['type' => 'Jenis analisis tidak dikenal.']);
+        }
+        if ($jenis === 'custom' && (! $prompt || $prompt->school_id !== $oleh->school_id)) {
+            throw ValidationException::withMessages(['prompt' => 'Pilih prompt tersimpan terlebih dahulu.']);
+        }
+        if ($jenis !== 'custom') {
+            $prompt = null; // prompt hanya untuk jenis kustom
         }
         if (($persetujuan['setuju'] ?? false) !== true) {
             throw ValidationException::withMessages(['setuju' => 'Persetujuan pemrosesan foto wajib diberikan sebelum foto diunggah.']);
@@ -45,13 +52,19 @@ final class BuatAnalisis
         }
         $jpeg = self::siapkanFoto($foto);
 
+        // Nama pemberi persetujuan dan hubungannya opsional: bila kosong, orang yang difoto dianggap memberi persetujuan sendiri.
+        $subjek = trim((string) ($persetujuan['subject_name'] ?? ''));
+        if ($jenis === 'custom' && $subjek === '') {
+            $subjek = 'Tanpa nama'; // foto kustom belum tentu orang
+        }
         $a = new AiAnalysis([
             'type' => $jenis,
-            'subject_name' => $persetujuan['subject_name'] ?? '',
-            'consent_name' => $persetujuan['consent_name'] ?? '',
-            'consent_relation' => $persetujuan['consent_relation'] ?? '',
+            'subject_name' => $subjek,
+            'consent_name' => trim((string) ($persetujuan['consent_name'] ?? '')) ?: $subjek,
+            'consent_relation' => ($persetujuan['consent_relation'] ?? '') ?: 'diri_sendiri',
         ]);
-        $a->forceFill(['created_by' => $oleh->id, 'consented_at' => now(), 'consent_version' => Skema::VERSI_PERSETUJUAN]);
+        $a->forceFill(['created_by' => $oleh->id, 'consented_at' => now(), 'consent_version' => Skema::VERSI_PERSETUJUAN,
+            'prompt_name' => $prompt?->name, 'prompt_text' => $prompt?->body]);
         $a->validasiDulu(); // isian salah ditolak sebelum foto menyentuh disk
 
         $jalur = 'analisis-ai/'.$oleh->school_id.'/'.Str::uuid().'.jpg';

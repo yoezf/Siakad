@@ -20,7 +20,7 @@ class AiAnalysis extends Model
 {
     use BelongsToSchool, LogsActivity;
 
-    public const TYPE = ['palmistry' => 'Palmistry', 'physiognomy' => 'Physiognomy'];
+    public const TYPE = ['palmistry' => 'Palmistry', 'physiognomy' => 'Physiognomy', 'custom' => 'Prompt kustom'];
 
     public const STATUS = ['menunggu' => 'Menunggu', 'diproses' => 'Diproses', 'selesai' => 'Selesai', 'gagal' => 'Gagal'];
 
@@ -74,6 +74,12 @@ class AiAnalysis extends Model
         if ($err) {
             throw ValidationException::withMessages($err);
         }
+    }
+
+    /** Label untuk daftar dan kartu: jenis, dan nama prompt untuk analisis kustom. */
+    public function judul(): string
+    {
+        return $this->type === 'custom' ? 'Kustom: '.($this->prompt_name ?? '-') : self::TYPE[$this->type];
     }
 
     public function author(): BelongsTo

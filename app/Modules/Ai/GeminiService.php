@@ -16,10 +16,13 @@ final class GeminiService
      *
      * @throws GeminiGagal
      */
-    public function analisis(string $jenis, string $gambar, string $mime): array
+    public function analisis(string $jenis, string $gambar, string $mime, ?string $promptKustom = null): array
     {
-        if (! isset(Skema::BAGIAN[$jenis])) {
+        if (! isset(Skema::BAGIAN[$jenis]) && $jenis !== 'custom') {
             throw new GeminiGagal('Jenis analisis tidak dikenal.');
+        }
+        if ($jenis === 'custom' && trim((string) $promptKustom) === '') {
+            throw new GeminiGagal('Prompt kustom kosong.');
         }
         $kunci = (string) config('services.gemini.key');
         if ($kunci === '') {
@@ -31,7 +34,7 @@ final class GeminiService
             $res = Http::baseUrl(rtrim((string) config('services.gemini.base_url'), '/'))->withHeaders(['x-goog-api-key' => $kunci])->withOptions(array_filter(['verify' => config('services.gemini.ca_bundle') ?: null]))->acceptJson()
                 ->connectTimeout(10)->timeout((int) config('services.gemini.timeout'))
                 ->post("/models/{$model}:generateContent", [
-                    'contents' => [['role' => 'user', 'parts' => [['text' => Skema::prompt($jenis)], ['inline_data' => ['mime_type' => $mime, 'data' => base64_encode($gambar)]]]]],
+                    'contents' => [['role' => 'user', 'parts' => [['text' => Skema::prompt($jenis, $promptKustom)], ['inline_data' => ['mime_type' => $mime, 'data' => base64_encode($gambar)]]]]],
                     'generationConfig' => ['temperature' => 0.2, 'responseMimeType' => 'application/json', 'responseSchema' => Skema::skema($jenis), 'maxOutputTokens' => 4096],
                 ]);
         } catch (ConnectionException) {
@@ -62,6 +65,6 @@ final class GeminiService
             throw new GeminiGagal('Respons AI tidak dapat dibaca sebagai JSON.', true);
         }
 
-        return Skema::bersihkan($jenis, $mentah) + ['model' => $model];
+        return Skema::bersihkan($jenis, $mentah, $promptKustom) + ['model' => $model];
     }
 }

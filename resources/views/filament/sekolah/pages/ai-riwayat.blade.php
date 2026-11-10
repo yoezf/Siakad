@@ -1,5 +1,4 @@
 <x-filament-panels::page>
-    @include('filament.sekolah.ai.peringatan')
     @php($daftar = $this->daftar())
 
     <div class="ui-bar">
@@ -23,7 +22,7 @@
                     @foreach ($daftar as $a)
                         <tr>
                             <td class="nw">{{ $a->created_at->format('d-m-Y H:i') }}</td>
-                            <td>{{ \App\Models\AiAnalysis::TYPE[$a->type] }}</td>
+                            <td>{{ $a->judul() }}</td>
                             <td>{{ $a->subject_name }}</td>
                             <td><span class="ui-badge {{ $a->status === 'gagal' ? 'ui-badge-danger' : '' }}">{{ \App\Models\AiAnalysis::STATUS[$a->status] }}</span></td>
                             <td>{{ $a->readability ? \App\Modules\Ai\Skema::KETERBACAAN[$a->readability] : '-' }}</td>

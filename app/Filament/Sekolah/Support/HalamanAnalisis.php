@@ -3,6 +3,7 @@
 namespace App\Filament\Sekolah\Support;
 
 use App\Models\AiAnalysis;
+use App\Models\AiPrompt;
 use App\Modules\Ai\BuatAnalisis;
 use App\Modules\Ai\Skema;
 use Filament\Notifications\Notification;
@@ -36,6 +37,8 @@ abstract class HalamanAnalisis extends Page
 
     public bool $dewasa = false;
 
+    public ?int $promptId = null;
+
     public static function canAccess(): bool
     {
         return static::bisaMengakses();
@@ -51,6 +54,12 @@ abstract class HalamanAnalisis extends Page
         return Skema::TEKS_PERSETUJUAN;
     }
 
+    /** @return Collection<int, AiPrompt> */
+    public function daftarPrompt(): Collection
+    {
+        return AiPrompt::orderBy('name')->get();
+    }
+
     public function bisaMembuat(): bool
     {
         return Gate::allows('create', AiAnalysis::class);
@@ -64,8 +73,9 @@ abstract class HalamanAnalisis extends Page
             return;
         }
         try {
+            $prompt = static::$jenis === 'custom' && $this->promptId ? AiPrompt::find($this->promptId) : null; // id dari peramban: hanya prompt sekolah ini yang ditemukan
             $a = BuatAnalisis::handle(auth()->user(), static::$jenis, $this->foto, ['subject_name' => $this->subjek, 'consent_name' => $this->pemberi,
-                'consent_relation' => $this->hubungan, 'setuju' => $this->setuju, 'dewasa' => $this->dewasa]);
+                'consent_relation' => $this->hubungan, 'setuju' => $this->setuju, 'dewasa' => $this->dewasa], $prompt);
         } catch (ValidationException $e) {
             Notification::make()->danger()->persistent()->title('Tidak bisa diproses')->body(collect($e->errors())->flatten()->implode(' '))->send();
 

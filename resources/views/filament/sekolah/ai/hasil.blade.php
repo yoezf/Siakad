@@ -3,18 +3,26 @@
 @php($sibuk = in_array($a->status, ['menunggu', 'diproses'], true))
 @php($kelas = ['terlihat_jelas' => 'ui-badge', 'terlihat_samar' => 'ui-badge ui-badge-warn', 'tidak_terlihat' => 'ui-badge ui-badge-mute'])
 <div class="ui-card" data-testid="hasil-ai" @if ($sibuk) wire:poll.2s @endif>
-    <h3 class="ui-title">{{ \App\Models\AiAnalysis::TYPE[$a->type] }}: {{ $a->subject_name }}</h3>
+    <h3 class="ui-title">{{ $a->judul() }}: {{ $a->subject_name }}</h3>
     <div class="ui-sub">
         {{ $a->created_at->format('d-m-Y H:i') }} &middot; oleh {{ $a->author?->name ?? '-' }} &middot;
         <span class="ui-badge {{ $a->status === 'gagal' ? 'ui-badge-danger' : '' }}">{{ \App\Models\AiAnalysis::STATUS[$a->status] }}</span>
         @if ($a->readability) &middot; Keterbacaan gambar: <strong>{{ \App\Modules\Ai\Skema::KETERBACAAN[$a->readability] }}</strong> @endif
     </div>
 
-    @if ($sibuk)
+    @php($detik = max(0, now()->timestamp - $a->updated_at->timestamp))
+    @if ($sibuk && $detik > 90)
+        <div class="ui-alert ui-alert-warn" style="margin-top:.75rem" data-testid="macet-ai">
+            <strong>Sudah {{ $detik }} detik tanpa hasil, tidak normal.</strong> Kemungkinan pekerja antrean tidak berjalan: pastikan jendela <strong>Antrean AI</strong> (dari <code>jalankan-lokal.bat</code>) terbuka.
+            @if ($a->image_path)<div style="margin-top:.5rem"><button type="button" class="ui-btn ui-btn-sm" wire:click="ulangi({{ $a->id }})">Coba lagi</button></div>@endif
+        </div>
+    @elseif ($sibuk)
         <div class="ui-alert ui-alert-info ui-proses" style="margin-top:.75rem" data-testid="proses-ai"><span class="ui-spin" aria-hidden="true"></span>
-            <span>Foto sedang dianalisis, {{ max(0, now()->timestamp - $a->created_at->timestamp) }} detik berjalan (biasanya 5 sampai 15 detik). Halaman ini diperbarui otomatis, tidak perlu dimuat ulang.</span></div>
+            <span>Foto sedang dianalisis, {{ $detik }} detik berjalan (biasanya 5 sampai 15 detik). Halaman ini diperbarui otomatis, tidak perlu dimuat ulang.</span></div>
     @elseif ($a->status === 'gagal')
-        <div class="ui-alert ui-alert-danger" style="margin-top:.75rem"><strong>Analisis gagal.</strong> {{ $a->error }}</div>
+        <div class="ui-alert ui-alert-danger" style="margin-top:.75rem"><strong>Analisis gagal.</strong> {{ $a->error }}
+            @if ($a->image_path)<div style="margin-top:.5rem"><button type="button" class="ui-btn ui-btn-sm" wire:click="ulangi({{ $a->id }})" data-testid="ulangi-ai">Coba lagi</button></div>@endif
+        </div>
     @elseif ($r)
         @php($foto = $this->fotoDataUri($a))
         @if ($foto)
@@ -26,11 +34,16 @@
             </div>
         @endif
 
-        <p class="ui-note">{{ $a->summary }}</p>
+        @if ($a->type === 'custom')
+            <div class="ui-note" data-testid="jawaban-ai">{{ $r['jawaban'] ?? $a->summary }}</div>
+        @else
+            <p class="ui-note">{{ $a->summary }}</p>
+        @endif
         @if (! empty($r['keterbacaan_gambar']['alasan']))
             <p class="ui-sub">Keterbacaan: {{ $r['keterbacaan_gambar']['alasan'] }}</p>
         @endif
 
+        @if ($a->type !== 'custom')
         <div class="ui-wrap" style="margin-top:1rem">
             <table class="ui-table" data-testid="bagian-ai">
                 <thead><tr><th>Bagian</th><th>Keterbacaan</th><th>Deskripsi visual</th><th>Interpretasi tradisi</th></tr></thead>
@@ -56,6 +69,10 @@
         </div>
         @if (count($r['bagian_tidak_terdeteksi']) > 0)
             <p class="ui-sub">Tidak terdeteksi: {{ implode(', ', $r['bagian_tidak_terdeteksi']) }}.</p>
+        @endif
+        @endif
+        @if ($a->prompt_text)
+            <details style="margin:.5rem 0" data-testid="prompt-dipakai"><summary class="ui-sub" style="cursor:pointer">Prompt yang dipakai: {{ $a->prompt_name }}</summary><pre class="ui-json">{{ $a->prompt_text }}</pre></details>
         @endif
         @if (! empty($r['disaring']))
             <div class="ui-alert ui-alert-warn">Sebagian teks disaring karena memuat kesimpulan yang tidak diizinkan.</div>

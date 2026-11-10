@@ -90,6 +90,18 @@ abstract class AiTestCase extends TestCase
         (new \App\Jobs\ProsesAnalisisAi($a->id))->handle(app(\App\Modules\Ai\GeminiService::class));
     }
 
+    /** Respons mentah untuk prompt kustom yang sah; $ubah menimpa kolomnya. */
+    protected function kustomMentah(array $ubah = []): array
+    {
+        return $ubah + ['keterbacaan_gambar' => ['tingkat' => 'baik', 'alasan' => 'Foto jelas.'], 'jawaban' => 'Terlihat sebuah cangkir putih di atas meja kayu.',
+            'catatan_keterbatasan' => ['Sudut foto dari atas.']];
+    }
+
+    protected function prompt(string $nama = 'Deskripsi benda', string $isi = 'Sebutkan semua benda yang terlihat di foto dan jelaskan warnanya.', $sekolah = null): \App\Models\AiPrompt
+    {
+        return $this->untuk($sekolah ?? $this->s, fn () => \App\Models\AiPrompt::create(['name' => $nama, 'body' => $isi]));
+    }
+
     /** Bungkus hasil mentah menjadi respons Gemini. */
     protected function responsGemini(array $mentah): array
     {

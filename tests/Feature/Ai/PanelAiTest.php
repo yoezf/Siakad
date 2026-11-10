@@ -14,7 +14,7 @@ use Livewire\Livewire;
 
 class PanelAiTest extends AiTestCase
 {
-    private const HALAMAN = ['analisis-palmistry', 'analisis-physiognomy', 'riwayat-analisis-ai', 'statistik-analisis-ai'];
+    private const HALAMAN = ['analisis-palmistry', 'analisis-physiognomy', 'riwayat-analisis-ai', 'statistik-analisis-ai', 'prompt-kustom', 'analisis-prompt'];
 
     private function masuk($akun): void
     {
@@ -110,11 +110,21 @@ class PanelAiTest extends AiTestCase
         $this->assertSame(0, AiAnalysis::count());
     }
 
-    public function test_peringatan_hiburan_dan_teks_persetujuan_selalu_tampil(): void
+    public function test_banner_peringatan_tidak_ada_tetapi_persetujuan_dan_pilihan_foto_tampil(): void
     {
         $this->masuk($this->admin);
 
-        Livewire::test(PhysiognomyAnalysis::class)->assertSee('Hanya untuk hiburan')->assertSee('bukan penilaian ilmiah')->assertSee('Google Gemini')->assertSee('berusia 18 tahun ke atas');
+        Livewire::test(PhysiognomyAnalysis::class)->assertDontSee('Hanya untuk hiburan')->assertDontSeeHtml('peringatan-ai')
+            ->assertSee('Google Gemini')->assertSee('berusia 18 tahun ke atas')->assertSee('(opsional)')
+            ->assertSee('Ambil foto (kamera)')->assertSee('Pilih dari galeri')->assertSeeHtml('capture="environment"')->assertSeeHtml('data-testid="pilih-foto"');
+    }
+
+    public function test_keterangan_bukan_penilaian_ilmiah_tetap_ada_di_hasil(): void
+    {
+        $a = $this->selesai();
+        $this->masuk($this->admin);
+
+        Livewire::test(PalmistryAnalysis::class)->call('pilih', $a->id)->assertSee('interpretasi tradisional atau budaya')->assertSee('bukan penilaian ilmiah');
     }
 
     // ---------- hasil ----------
@@ -245,7 +255,7 @@ class PanelAiTest extends AiTestCase
         $d = Livewire::test(StatistikAnalisis::class)->instance()->data();
 
         $this->assertSame(4, $d['total']);
-        $this->assertSame(['palmistry' => 3, 'physiognomy' => 1], $d['jenis']);
+        $this->assertSame(['palmistry' => 3, 'physiognomy' => 1, 'custom' => 0], $d['jenis']);
         $this->assertSame(['menunggu' => 1, 'diproses' => 0, 'selesai' => 2, 'gagal' => 1], $d['status']);
         $this->assertSame(67, $d['berhasil']);
         $this->assertSame(2, $d['keterbacaan']['baik']);

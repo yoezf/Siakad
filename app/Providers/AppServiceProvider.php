@@ -59,5 +59,6 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(AssessmentComponent::class, PenilaianPolicy::class);
         Gate::policy(\App\Models\Announcement::class, \App\Policies\PengumumanPolicy::class);
         Gate::policy(\App\Models\AiAnalysis::class, \App\Policies\AnalisisAiPolicy::class);
+        Gate::policy(\App\Models\AiPrompt::class, \App\Policies\PromptAiPolicy::class);
     }
 }

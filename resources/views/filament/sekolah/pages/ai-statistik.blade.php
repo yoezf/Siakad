@@ -5,6 +5,7 @@
             <div><b>{{ $d['total'] }}</b><span>Total analisis</span></div>
             <div><b>{{ $d['jenis']['palmistry'] }}</b><span>Palmistry</span></div>
             <div><b>{{ $d['jenis']['physiognomy'] }}</b><span>Physiognomy</span></div>
+            <div><b>{{ $d['jenis']['custom'] }}</b><span>Prompt kustom</span></div>
             <div><b>{{ $d['berhasil'] === null ? '-' : $d['berhasil'].'%' }}</b><span>Berhasil</span></div>
             <div><b>{{ $d['hariIni'] }} / {{ $d['batas'] }}</b><span>Pemakaian hari ini</span></div>
         </div>
