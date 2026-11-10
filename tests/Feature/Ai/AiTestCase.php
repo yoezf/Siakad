@@ -50,7 +50,7 @@ abstract class AiTestCase extends TestCase
 
     protected function persetujuan(array $ubah = []): array
     {
-        return $ubah + ['subject_name' => 'Budi Santoso', 'consent_name' => 'Budi Santoso', 'consent_relation' => 'diri_sendiri', 'setuju' => true, 'dewasa' => true];
+        return $ubah + ['subject_name' => 'Budi Santoso'];
     }
 
     protected function buat(?User $akun = null, string $jenis = 'palmistry', ?UploadedFile $foto = null, ?array $persetujuan = null, $sekolah = null): AiAnalysis

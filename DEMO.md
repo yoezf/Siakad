@@ -22,10 +22,10 @@ Bila ada GAGAL, perbaiki sebelum demo. Jika `demo:periksa --ai` gagal, bagian AI
 
 ### 15 menit sebelum
 1. Pastikan Laragon (MySQL) hidup.
-2. Klik dua kali **`jalankan-lokal.bat`**. Dua jendela terbuka: server dan **Antrean AI**. Biarkan keduanya terbuka.
+2. Klik dua kali **`jalankan-lokal.bat`**. Satu jendela server terbuka; biarkan terbuka. Analisis AI diproses langsung (`QUEUE_CONNECTION=sync`).
 3. Buka `http://127.0.0.1:8000`. Layar proyektor atau monitor: gunakan tema terang (menu pengguna, pojok kanan atas).
 4. Siapkan **dua jendela peramban**: satu memakai alamat `127.0.0.1:8000` dan satu memakai `localhost:8000`, supaya dua peran bisa login bersamaan tanpa saling keluar.
-5. Siapkan **foto telapak tangan** (milik Anda sendiri, di galeri atau HP) untuk segmen AI.
+5. Siapkan beberapa foto untuk segmen AI (telapak tangan Anda sendiri, sebuah benda, dan tulisan) di galeri atau HP.
 6. Tutup aplikasi lain dan matikan notifikasi.
 7. Untuk demo di HP: jalankan **`jalankan-hp.bat`** dan buka alamat yang ditampilkan di HP (jaringan Wi-Fi yang sama). Jangan pakai jaringan umum.
 
@@ -103,12 +103,12 @@ Katakan: "Pemisahan dijaga di database dan di kode, dan diuji otomatis."
 
 ### 7. Analisis AI (opsional, hanya SD)
 Login `admin@harapanbangsa.demo` > grup menu **Analisis AI**.
-- **Prompt Kustom:** sudah ada tiga prompt contoh. Tunjukkan bahwa pengguna bisa menulis dan menyimpan prompt sendiri.
-- **Analisis dengan Prompt:** pilih **Palmistry gaya chat**, klik **Ambil foto (kamera)** atau **Pilih dari galeri**, pilih foto telapak tangan Anda, centang pernyataan dan persetujuan, lalu **Analisis foto**. Hasil muncul sekitar 4 sampai 15 detik.
-- **Palmistry Analysis:** versi terstruktur: status keterbacaan per garis, area deteksi di atas foto, dan JSON. Katakan: garis yang tidak terlihat tidak dikarang.
+- **Prompt Kustom:** sudah ada tiga prompt contoh. Tunjukkan bahwa pengguna menulis dan menyimpan prompt sendiri: apa pun yang ingin diketahui dari sebuah foto.
+- **Analisis dengan Prompt:** pilih prompt (misalnya **Palmistry gaya chat**), klik **Ambil foto (kamera)** atau **Pilih dari galeri**, lalu **Analisis foto**. Tidak ada isian wajib lain. Hasil muncul sekitar 4 sampai 15 detik.
+- Coba prompt berbeda pada foto berbeda (benda, tulisan, telapak tangan) untuk menunjukkan fleksibilitasnya: satu alat, prompt yang menentukan hasil.
 - **Riwayat** dan **Statistik:** semua tercatat; foto dan hasil bisa dihapus kapan saja.
-- Katakan dengan jelas: ini **fitur hiburan dan bukan penilaian ilmiah**. Mati bawaan, dinyalakan per sekolah, hanya admin yang bisa memakai, memerlukan persetujuan, dan jawaban yang menyimpulkan kecerdasan, penyakit, suku, atau nasib dari wajah disaring.
-- Gunakan **foto Anda sendiri atau orang dewasa yang setuju**, jangan foto siswa.
+- Katakan dengan jelas: fitur ini **mati bawaan**, dinyalakan per sekolah oleh Super Admin, hanya admin sekolah yang memakainya, dan jawaban yang menyimpulkan hal sensitif tentang orang (kecerdasan, penyakit, suku, agama, dan dari wajah juga watak atau nasib) ditolak atau disaring.
+- Hasil palmistri adalah tafsir tradisi untuk hiburan, bukan sains.
 
 ---
 
@@ -120,7 +120,7 @@ Login `admin@harapanbangsa.demo` > grup menu **Analisis AI**.
 | Siapa pemilik data? | Sekolah. Pengembang mengelola platform. Pembagian tanggung jawab akan diatur dalam kontrak. Tinjauan hukum belum dilakukan. |
 | Bagaimana keamanan? | Data sekolah dipisah di database dan kode, hak akses per peran, kunci rapor berversi dengan sidik, log audit perubahan nilai. Semuanya diuji otomatis. Belum ada audit keamanan pihak ketiga. |
 | Berapa biaya AI? | Terukur sekitar Rp 25 sampai Rp 50 per analisis (Gemini). Ada batas harian per sekolah. Bisa dimatikan per sekolah. |
-| Apakah foto siswa dipakai? | Tidak. Modul AI ditujukan untuk dewasa yang setuju, dan hasilnya tidak boleh dipakai untuk menilai siswa atau pegawai. |
+| Apakah foto siswa dipakai? | Tidak dalam demo ini. Aplikasi tidak lagi meminta persetujuan di layar, jadi penggunaan foto orang lain menjadi tanggung jawab sekolah dan pengguna. Admin sekolah saja yang bisa memakainya, dan fiturnya mati bawaan. |
 | Kurikulum? | Bebas diatur sekolah (bawaan Kurikulum Merdeka). KKM, komponen, dan bobot per sekolah. |
 | Bisa diimpor dari data lama? | Ya, ada impor dari Excel (tombol di menu Siswa), lengkap dengan templat dan pemeriksaan data. |
 | Berapa banyak uji? | Lebih dari 670 uji otomatis. Aturan penting juga diuji dengan "merusak kode sengaja" untuk memastikan uji benar-benar menangkap kesalahan. |
@@ -136,9 +136,9 @@ Login `admin@harapanbangsa.demo` > grup menu **Analisis AI**.
 | Gejala | Tindakan cepat |
 |---|---|
 | Halaman lambat (sekitar 1 detik per klik) | Server tidak dijalankan lewat `jalankan-lokal.bat`. Hentikan, lalu jalankan lewat skrip itu. |
-| Analisis AI "Menunggu" lebih dari 90 detik | Jendela **Antrean AI** tertutup. Buka `jalankan-lokal.bat` lagi, lalu klik **Coba lagi**. |
+| Analisis AI "Menunggu" lebih dari 90 detik | Proses terputus (server tertutup atau internet putus). Pastikan server jalan, lalu klik **Coba lagi**. |
 | Analisis AI gagal (kuota atau jaringan) | Lewati segmen AI. Katakan: "Ini bergantung layanan eksternal." Tunjukkan Riwayat dan Statistik dari data yang ada. |
-| Foto ditolak oleh Gemini | Pakai foto lain (tangan, benda), atau lewati. |
+| Foto ditolak oleh Gemini | Pakai foto lain (benda, tulisan, tangan), atau lewati. |
 | Data demo kacau karena dicoba-coba | `php artisan demo:isi --ya` (70 detik), lalu mulai ulang dari awal. |
 | Lupa kata sandi atau akun hilang | `php artisan demo:isi --ya` mengembalikan semuanya. |
 | Tidak ada internet | Semua bagian jalan, kecuali analisis AI. |
@@ -146,5 +146,5 @@ Login `admin@harapanbangsa.demo` > grup menu **Analisis AI**.
 
 ## F. Setelah demo
 - Hapus foto dan hasil lewat tombol di kartu hasil atau di **Riwayat Analisis**.
-- Tutup jendela server dan **Antrean AI**. Bila memakai `jalankan-hp.bat`, hentikan sebelum meninggalkan jaringan itu.
+- Tutup jendela server. Bila memakai `jalankan-hp.bat`, hentikan sebelum meninggalkan jaringan itu.
 - Hapus akun uji dengan kata sandi sederhana, jika ada (`demo:periksa` mengingatkan).

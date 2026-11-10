@@ -24,7 +24,7 @@ final class BuatAnalisis
 
     public const MAKS_SISI = 1600;
 
-    /** @param  array{subject_name?: mixed, consent_name?: mixed, consent_relation?: mixed, setuju?: mixed, dewasa?: mixed}  $persetujuan */
+    /** @param  array{subject_name?: mixed}  $persetujuan hanya keterangan foto (opsional); nama parameter dipertahankan agar pemanggil tidak berubah */
     public static function handle(User $oleh, string $jenis, UploadedFile $foto, array $persetujuan, ?AiPrompt $prompt = null): AiAnalysis
     {
         if ($oleh->school_id === null || CurrentSchool::id() !== $oleh->school_id) {
@@ -41,27 +41,18 @@ final class BuatAnalisis
         if ($jenis !== 'custom') {
             $prompt = null; // prompt hanya untuk jenis kustom
         }
-        if (($persetujuan['setuju'] ?? false) !== true) {
-            throw ValidationException::withMessages(['setuju' => 'Persetujuan pemrosesan foto wajib diberikan sebelum foto diunggah.']);
-        }
-        if (($persetujuan['dewasa'] ?? false) !== true) {
-            throw ValidationException::withMessages(['dewasa' => 'Orang yang difoto wajib dinyatakan berusia 18 tahun ke atas.']);
-        }
         if (AiAnalysis::whereDate('created_at', today())->count() >= (int) config('ai.batas_harian')) {
             throw ValidationException::withMessages(['foto' => 'Batas analisis harian sekolah ini sudah tercapai. Coba lagi besok.']);
         }
         $jpeg = self::siapkanFoto($foto);
 
-        // Nama pemberi persetujuan dan hubungannya opsional: bila kosong, orang yang difoto dianggap memberi persetujuan sendiri.
-        $subjek = trim((string) ($persetujuan['subject_name'] ?? ''));
-        if ($jenis === 'custom' && $subjek === '') {
-            $subjek = 'Tanpa nama'; // foto kustom belum tentu orang
-        }
+        // Persetujuan tidak lagi diminta (keputusan pemilik produk). Kolom persetujuan diisi otomatis, dan versinya mencatat bahwa tidak ada persetujuan yang diminta.
+        $subjek = trim((string) ($persetujuan['subject_name'] ?? '')) ?: 'Tanpa nama'; // keterangan foto bersifat opsional
         $a = new AiAnalysis([
             'type' => $jenis,
             'subject_name' => $subjek,
-            'consent_name' => trim((string) ($persetujuan['consent_name'] ?? '')) ?: $subjek,
-            'consent_relation' => ($persetujuan['consent_relation'] ?? '') ?: 'diri_sendiri',
+            'consent_name' => $subjek,
+            'consent_relation' => 'diri_sendiri',
         ]);
         $a->forceFill(['created_by' => $oleh->id, 'consented_at' => now(), 'consent_version' => Skema::VERSI_PERSETUJUAN,
             'prompt_name' => $prompt?->name, 'prompt_text' => $prompt?->body]);

@@ -83,9 +83,9 @@ class PeriksaDemo extends Command
             $m = DB::table('jobs')->count();
             $g = DB::table('failed_jobs')->count();
 
-            return $m === 0 && $g === 0 ? 'bersih' : throw new \RuntimeException("$m job menunggu, $g gagal. Pastikan jendela Antrean AI berjalan (jalankan-lokal.bat)");
+            return $m === 0 && $g === 0 ? 'bersih' : throw new \RuntimeException("$m job menunggu, $g gagal. Setel QUEUE_CONNECTION=sync di .env untuk demo lokal, lalu php artisan queue:clear");
         }, peringatan: true);
-        $this->cek('Jenis antrean', fn () => config('queue.default') === 'sync' ? 'sync: analisis langsung diproses saat diunggah' : config('queue.default').': jendela "Antrean AI" (jalankan-lokal.bat) harus terbuka', peringatan: true);
+        $this->cek('Jenis antrean', fn () => config('queue.default') === 'sync' ? 'sync: analisis langsung diproses saat diunggah' : config('queue.default').': butuh pekerja antrean yang berjalan; untuk demo lokal pakai QUEUE_CONNECTION=sync', peringatan: true);
 
         if ($this->option('ai')) {
             $this->cek('Panggilan nyata ke Gemini berhasil', function () {

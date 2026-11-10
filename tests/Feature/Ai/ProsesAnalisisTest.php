@@ -66,6 +66,7 @@ class ProsesAnalisisTest extends AiTestCase
 
     public function test_kegagalan_sementara_dilempar_untuk_diulang_dan_gagal_setelah_percobaan_habis(): void
     {
+        config(['queue.default' => 'database']);
         $this->fakeHttp(['*' => Http::response([], 429)]);
         $a = $this->buat();
         $job = new ProsesAnalisisAi($a->id);
@@ -79,6 +80,18 @@ class ProsesAnalisisTest extends AiTestCase
         $this->assertSame('diproses', $this->segar($a)->status);
 
         $job->failed($e); // percobaan terakhir habis
+
+        $this->assertSame('gagal', $this->segar($a)->status);
+        $this->assertNotNull($this->segar($a)->error);
+    }
+
+    public function test_antrean_sync_langsung_menandai_gagal_tanpa_melempar(): void
+    {
+        config(['queue.default' => 'sync']);
+        $this->fakeHttp(['*' => Http::response([], 429)]);
+        $a = $this->buat();
+
+        (new ProsesAnalisisAi($a->id))->handle(app(GeminiService::class));
 
         $this->assertSame('gagal', $this->segar($a)->status);
         $this->assertNotNull($this->segar($a)->error);

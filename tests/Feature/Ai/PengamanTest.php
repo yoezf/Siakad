@@ -8,25 +8,9 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 
-/** Pengaman tambahan Tahap B: pernyataan dewasa, batas harian, penghapusan otomatis, dan area deteksi. */
+/** Pengaman tambahan Tahap B: batas harian, penghapusan otomatis, dan area deteksi. */
 class PengamanTest extends AiTestCase
 {
-    // ---------- dewasa ----------
-
-    public function test_pernyataan_dewasa_wajib(): void
-    {
-        foreach ([false, null, 'ya', 1] as $nilai) {
-            try {
-                $this->buat(null, 'palmistry', null, $this->persetujuan(['dewasa' => $nilai]));
-                $this->fail('seharusnya ditolak');
-            } catch (ValidationException $e) {
-                $this->assertArrayHasKey('dewasa', $e->errors());
-            }
-        }
-        $this->assertSame(0, AiAnalysis::withoutGlobalScopes()->count());
-        $this->assertSame([], Storage::disk(AiAnalysis::DISK)->allFiles());
-    }
-
     // ---------- batas harian ----------
 
     public function test_batas_harian_per_sekolah(): void

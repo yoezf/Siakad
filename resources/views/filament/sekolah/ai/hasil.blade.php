@@ -13,7 +13,7 @@
     @php($detik = max(0, now()->timestamp - $a->updated_at->timestamp))
     @if ($sibuk && $detik > 90)
         <div class="ui-alert ui-alert-warn" style="margin-top:.75rem" data-testid="macet-ai">
-            <strong>Sudah {{ $detik }} detik tanpa hasil, tidak normal.</strong> Kemungkinan pekerja antrean tidak berjalan: pastikan jendela <strong>Antrean AI</strong> (dari <code>jalankan-lokal.bat</code>) terbuka.
+            <strong>Sudah {{ $detik }} detik tanpa hasil, tidak normal.</strong> Proses analisis kemungkinan terputus. Klik <strong>Coba lagi</strong>; bila terulang, periksa koneksi internet dan kunci Gemini.
             @if ($a->image_path)<div style="margin-top:.5rem"><button type="button" class="ui-btn ui-btn-sm" wire:click="ulangi({{ $a->id }})">Coba lagi</button></div>@endif
         </div>
     @elseif ($sibuk)

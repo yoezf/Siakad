@@ -7,11 +7,11 @@ PHP bawaan Windows tidak mengaktifkan OPcache, sehingga setiap halaman terasa la
 padahal foto HP 3 sampai 8 MB. Proyek ini menyertakan pengaturan khusus (`.php/lokal.ini`) yang tidak mengubah `php.ini` sistem.
 
 1. Hentikan server lama (tutup jendela terminal tempat `php artisan serve` berjalan).
-2. Klik dua kali **`jalankan-lokal.bat`** di folder `sekolah-app`. Ia membuka dua jendela: server aplikasi dan **Antrean AI**. Biarkan keduanya terbuka.
+2. Klik dua kali **`jalankan-lokal.bat`** di folder `sekolah-app`. Ia membuka satu jendela server. Biarkan terbuka.
 3. Buka `http://127.0.0.1:8000`. Halaman kini sekitar 4 sampai 5 kali lebih cepat (sekitar 0,3 detik, dari 1,2 detik).
 
-Dengan cara ini antrean berjalan di jendela Antrean AI (`QUEUE_CONNECTION=database`), jadi tombol **Analisis foto** langsung kembali dan hasil muncul sendiri
-dalam sekitar 5 sampai 15 detik. Tidak perlu `QUEUE_CONNECTION=sync`.
+Untuk lokal/demo, `.env` memakai `QUEUE_CONNECTION=sync`: analisis diproses langsung saat tombol **Analisis foto** diklik (tombol menampilkan "Menganalisis foto..."
+selama sekitar 5 sampai 15 detik), tanpa pekerja antrean yang bisa mati. Setelah mengubah `.env`, jalankan `php artisan config:clear`.
 
 ## 0b. Membuka dari HP (jaringan Wi-Fi yang sama)
 1. Klik dua kali **`jalankan-hp.bat`** (bukan `jalankan-lokal.bat`). Ia menampilkan alamat seperti `http://192.168.1.19:8080/sekolah/login`.
@@ -20,7 +20,7 @@ dalam sekitar 5 sampai 15 detik. Tidak perlu `QUEUE_CONNECTION=sync`.
 4. Untuk analisis AI: buka menu Analisis AI, pada kolom **Foto** pilih **Kamera** untuk memotret langsung, atau pilih dari galeri.
 
 Peringatan: siapa pun di jaringan yang sama bisa membuka aplikasi selama skrip berjalan, dan akun demo memakai kata sandi yang diketahui. Pakai hanya di jaringan tepercaya,
-tanpa data asli, lalu tutup kedua jendela setelah selesai.
+tanpa data asli, lalu tutup jendela server setelah selesai.
 
 Jika HP tidak bisa membuka alamat itu:
 - Windows menanyakan "Allow access" untuk php.exe: pilih **Allow** (jaringan Private dan Public).
@@ -73,12 +73,12 @@ Pastikan juga MySQL (Laragon) hidup dan server aplikasi berjalan.
 - Sekolah lain: masuk sebagai Super Admin (`/admin`), buka **Daftar sekolah**, ubah sekolahnya, centang **Analisis AI** pada fitur aktif, lalu simpan.
 
 ## 5. Coba
-1. Masuk sebagai admin sekolah (demo: `admin@harapanbangsa.demo`) lalu buka menu **Analisis AI**.
-2. Pilih **Palmistry Analysis** atau **Physiognomy Analysis**.
-3. Isi nama orang yang difoto dan nama pemberi persetujuan, centang pernyataan 18 tahun ke atas dan persetujuan, pilih foto, lalu klik **Analisis foto**.
+1. Masuk sebagai admin sekolah (demo: `admin@harapanbangsa.demo`) lalu buka menu **Analisis AI > Prompt Kustom**.
+2. Tulis nama dan isi prompt (apa yang ingin diketahui dari foto), lalu **Simpan prompt**. Tiga prompt contoh sudah ada di data demo.
+3. Buka **Analisis dengan Prompt**, pilih prompt, lalu **Ambil foto (kamera)** atau **Pilih dari galeri**, dan klik **Analisis foto**.
 4. Status berubah: Menunggu, Diproses, Selesai. Hasil muncul di bawah formulir dan di **Riwayat Analisis**.
 
-Tips foto: telapak tangan terbuka, cahaya merata, garis tidak tertutup bayangan. Wajah menghadap lurus, tanpa kacamata atau penutup. JPG, PNG, atau WEBP, maksimal 10 MB.
+Tips: foto yang jelas, cahaya cukup, objek memenuhi sebagian besar gambar. JPG, PNG, atau WEBP, maksimal 10 MB. Prompt yang meminta kesimpulan sensitif tentang orang ditolak saat disimpan.
 
 ## 6. Bila bermasalah
 | Gejala | Penyebab dan tindakan |
@@ -87,7 +87,7 @@ Tips foto: telapak tangan terbuka, cahaya merata, garis tidak tertutup bayangan.
 | "Kunci API Gemini ditolak" | Kunci salah atau dicabut. Buat ulang di AI Studio. |
 | "Layanan AI sedang sibuk atau terbatas kuotanya" | Kuota paket gratis habis. Tunggu atau aktifkan penagihan. |
 | "Foto ditolak oleh filter keamanan" | Coba foto lain yang lebih jelas. |
-| Menunggu terus | Jendela **Antrean AI** (`jalankan-lokal.bat`) tidak berjalan atau tertutup. |
+| Menunggu terus | `QUEUE_CONNECTION` bukan `sync` dan tidak ada pekerja antrean. Setel `sync` di `.env`, `php artisan config:clear`, lalu klik **Coba lagi**. |
 | Unggah foto gagal atau halaman error 500 | Server dijalankan tanpa `jalankan-lokal.bat`, jadi batas unggah 2 MB dan memori 128 MB berlaku. Jalankan lewat skrip itu. |
 | "Tidak bisa terhubung ke layanan AI" | Kemungkinan galat SSL (isi `GEMINI_CA_BUNDLE`) atau tidak ada internet. |
 | "Layanan AI menolak permintaan" (400) atau 404 | Nama model salah atau model sudah tidak tersedia untuk kunci baru. Pakai `gemini-3.5-flash-lite`. |

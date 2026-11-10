@@ -53,8 +53,9 @@ class ProsesAnalisisAi implements ShouldQueue
                 $segar->hapusFoto(); // minimisasi data: hasil teks tetap, foto tidak
             }
         } catch (GeminiGagal $e) {
-            if ($e->bisaDiulang && $this->attempts() < $this->tries) {
-                throw $e; // antrean mengulang sesuai backoff
+            // Antrean sungguhan mengulang sesuai backoff; antrean sync tidak punya percobaan ulang (galat akan sampai ke layar), jadi langsung ditandai gagal.
+            if ($e->bisaDiulang && $this->attempts() < $this->tries && config('queue.default') !== 'sync') {
+                throw $e;
             }
             $this->tandaiGagal($a, $e->getMessage());
         } catch (Throwable $e) {

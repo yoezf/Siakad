@@ -373,7 +373,7 @@ class PromptKustomTest extends AiTestCase
         $this->masuk($this->admin);
 
         $k = Livewire::test(AnalisisKustom::class)->set('promptId', $p->id)->assertSee('Lihat isi prompt')->assertSee('Sebutkan warna cangkir di foto.')
-            ->set('dewasa', true)->set('setuju', true)->set('foto', $this->foto())->call('kirim')->assertNotified('Foto diterima dan sedang dianalisis.');
+            ->set('foto', $this->foto())->call('kirim')->assertNotified('Foto diterima dan sedang dianalisis.');
         $a = AiAnalysis::first();
         $this->assertSame(['custom', 'Cangkir'], [$a->type, $a->prompt_name]);
 
@@ -388,7 +388,7 @@ class PromptKustomTest extends AiTestCase
         $b = $this->sekolah('SD B');
         $milikB = $this->prompt('Milik B', 'Sebutkan benda di foto.', $b);
         $this->masuk($this->admin);
-        $k = Livewire::test(AnalisisKustom::class)->set('dewasa', true)->set('setuju', true)->set('foto', $this->foto());
+        $k = Livewire::test(AnalisisKustom::class)->set('foto', $this->foto());
 
         $k->call('kirim')->assertNotified('Tidak bisa diproses');
         $k->set('promptId', $milikB->id)->set('foto', $this->foto())->call('kirim')->assertNotified('Tidak bisa diproses');

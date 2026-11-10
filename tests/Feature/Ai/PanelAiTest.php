@@ -2,8 +2,7 @@
 
 namespace Tests\Feature\Ai;
 
-use App\Filament\Sekolah\Pages\PalmistryAnalysis;
-use App\Filament\Sekolah\Pages\PhysiognomyAnalysis;
+use App\Filament\Sekolah\Pages\AnalisisKustom;
 use App\Filament\Sekolah\Pages\RiwayatAnalisis;
 use App\Filament\Sekolah\Pages\StatistikAnalisis;
 use App\Models\AiAnalysis;
@@ -14,7 +13,7 @@ use Livewire\Livewire;
 
 class PanelAiTest extends AiTestCase
 {
-    private const HALAMAN = ['analisis-palmistry', 'analisis-physiognomy', 'riwayat-analisis-ai', 'statistik-analisis-ai', 'prompt-kustom', 'analisis-prompt'];
+    private const HALAMAN = ['riwayat-analisis-ai', 'statistik-analisis-ai', 'prompt-kustom', 'analisis-prompt'];
 
     private function masuk($akun): void
     {
@@ -57,7 +56,7 @@ class PanelAiTest extends AiTestCase
 
     private function isi($halaman, array $ubah = [])
     {
-        $nilai = $ubah + ['subjek' => 'Budi Santoso', 'pemberi' => 'Budi Santoso', 'hubungan' => 'diri_sendiri', 'dewasa' => true, 'setuju' => true];
+        $nilai = $ubah + ['subjek' => 'Cangkir meja', 'promptId' => $this->prompt()->id];
         foreach ($nilai as $k => $v) {
             $halaman->set($k, $v);
         }
@@ -69,33 +68,41 @@ class PanelAiTest extends AiTestCase
     {
         $this->masuk($this->admin);
 
-        $k = $this->isi(Livewire::test(PalmistryAnalysis::class))->set('foto', $this->foto())->call('kirim');
+        $k = $this->isi(Livewire::test(AnalisisKustom::class))->set('foto', $this->foto())->call('kirim');
 
-        $k->assertNotified('Foto diterima dan sedang dianalisis.')->assertSee('Foto sedang dianalisis')->assertSee('Budi Santoso')->assertSet('setuju', false)->assertSet('dewasa', false);
+        $k->assertNotified('Foto diterima dan sedang dianalisis.')->assertSee('Foto sedang dianalisis')->assertSeeHtml('wire:poll.2s');
         $a = AiAnalysis::first();
-        $this->assertSame(['palmistry', 'menunggu'], [$a->type, $a->status]);
+        $this->assertSame(['custom', 'menunggu', 'Cangkir meja', 'tidak-diminta'], [$a->type, $a->status, $a->subject_name, $a->consent_version]);
         $this->assertSame($a->id, $k->instance()->analisis()->id);
-        $k->assertSeeHtml('wire:poll.2s');
     }
 
-    public function test_formulir_physiognomy_membuat_jenis_wajah(): void
+    public function test_formulir_tidak_meminta_izin_atau_nama_pemberi_persetujuan(): void
+    {
+        $this->prompt();
+        $this->masuk($this->admin);
+
+        Livewire::test(AnalisisKustom::class)->assertDontSeeHtml('type="checkbox"')->assertDontSee('berusia 18')->assertDontSee('pemberi persetujuan')->assertDontSee('Hubungan')
+            ->assertDontSee('Hanya untuk hiburan')->assertDontSeeHtml('peringatan-ai');
+    }
+
+    public function test_analisis_diproses_hanya_dengan_foto_dan_prompt_tanpa_isian_lain(): void
     {
         $this->masuk($this->admin);
 
-        $this->isi(Livewire::test(PhysiognomyAnalysis::class))->set('foto', $this->foto())->call('kirim');
+        $k = Livewire::test(AnalisisKustom::class)->set('promptId', $this->prompt()->id)->set('foto', $this->foto())->call('kirim')->assertNotified('Foto diterima dan sedang dianalisis.');
 
-        $this->assertSame('physiognomy', AiAnalysis::first()->type);
+        $a = AiAnalysis::first();
+        $this->assertSame(['Tanpa nama', 'Tanpa nama', 'diri_sendiri'], [$a->subject_name, $a->consent_name, $a->consent_relation], 'kolom lama diisi otomatis');
+        $k->assertSet('foto', null);
     }
 
-    public function test_formulir_menolak_tanpa_foto_persetujuan_atau_pernyataan_dewasa(): void
+    public function test_formulir_menolak_tanpa_foto_atau_tanpa_prompt(): void
     {
         $this->masuk($this->admin);
-        $k = Livewire::test(PalmistryAnalysis::class);
+        $k = Livewire::test(AnalisisKustom::class);
 
         $this->isi($k)->call('kirim')->assertNotified('Pilih foto terlebih dahulu.');
-        $this->isi($k, ['setuju' => false])->set('foto', $this->foto())->call('kirim')->assertNotified('Tidak bisa diproses');
-        $this->isi($k, ['dewasa' => false])->set('foto', $this->foto())->call('kirim')->assertNotified('Tidak bisa diproses');
-        $this->isi($k, ['subjek' => ''])->set('foto', $this->foto())->call('kirim')->assertNotified('Tidak bisa diproses');
+        $k->set('promptId', null)->set('foto', $this->foto())->call('kirim')->assertNotified('Tidak bisa diproses');
 
         $this->assertSame(0, AiAnalysis::count());
         $this->assertSame([], Storage::disk(AiAnalysis::DISK)->allFiles());
@@ -105,26 +112,26 @@ class PanelAiTest extends AiTestCase
     {
         $this->masuk($this->admin);
 
-        $this->isi(Livewire::test(PalmistryAnalysis::class))->set('foto', UploadedFile::fake()->createWithContent('x.jpg', 'bukan gambar'))->call('kirim')->assertNotified('Tidak bisa diproses');
+        $this->isi(Livewire::test(AnalisisKustom::class))->set('foto', UploadedFile::fake()->createWithContent('x.jpg', 'bukan gambar'))->call('kirim')->assertNotified('Tidak bisa diproses');
 
         $this->assertSame(0, AiAnalysis::count());
     }
 
-    public function test_banner_peringatan_tidak_ada_tetapi_persetujuan_dan_pilihan_foto_tampil(): void
+    public function test_pilihan_foto_kamera_dan_galeri_tampil(): void
     {
+        $this->prompt();
         $this->masuk($this->admin);
 
-        Livewire::test(PhysiognomyAnalysis::class)->assertDontSee('Hanya untuk hiburan')->assertDontSeeHtml('peringatan-ai')
-            ->assertSee('Google Gemini')->assertSee('berusia 18 tahun ke atas')->assertSee('(opsional)')
-            ->assertSee('Ambil foto (kamera)')->assertSee('Pilih dari galeri')->assertSeeHtml('capture="environment"')->assertSeeHtml('data-testid="pilih-foto"');
+        Livewire::test(AnalisisKustom::class)->assertSee('Ambil foto (kamera)')->assertSee('Pilih dari galeri')->assertSee('(opsional)')
+            ->assertSeeHtml('capture="environment"')->assertSeeHtml('data-testid="pilih-foto"');
     }
 
-    public function test_keterangan_bukan_penilaian_ilmiah_tetap_ada_di_hasil(): void
+    public function test_hasil_lama_palmistry_tetap_bisa_dibuka_walau_menunya_sudah_tidak_ada(): void
     {
         $a = $this->selesai();
         $this->masuk($this->admin);
 
-        Livewire::test(PalmistryAnalysis::class)->call('pilih', $a->id)->assertSee('interpretasi tradisional atau budaya')->assertSee('bukan penilaian ilmiah');
+        Livewire::test(AnalisisKustom::class)->call('pilih', $a->id)->assertSee('interpretasi tradisional atau budaya')->assertSee('bukan penilaian ilmiah');
     }
 
     // ---------- hasil ----------
@@ -134,7 +141,7 @@ class PanelAiTest extends AiTestCase
         $a = $this->selesai();
         $this->masuk($this->admin);
 
-        $k = Livewire::test(PalmistryAnalysis::class)->call('pilih', $a->id);
+        $k = Livewire::test(AnalisisKustom::class)->call('pilih', $a->id);
 
         $k->assertSee('Garis kehidupan')->assertSee('Terlihat jelas')->assertSee('Terlihat samar')->assertSee('Tidak terlihat')
             ->assertSee('Telapak tangan kanan dengan tiga garis utama yang terlihat.')->assertSee('Keterbacaan gambar:')->assertSeeHtml('<strong>Baik</strong>')
@@ -150,7 +157,7 @@ class PanelAiTest extends AiTestCase
         $a = $this->selesai('physiognomy');
         $this->masuk($this->admin);
 
-        Livewire::test(PhysiognomyAnalysis::class)->call('pilih', $a->id)->assertSee('Bentuk wajah')->assertSee('Proporsi visual wajah')->assertSee('Mata berbentuk almond.');
+        Livewire::test(AnalisisKustom::class)->call('pilih', $a->id)->assertSee('Bentuk wajah')->assertSee('Proporsi visual wajah')->assertSee('Mata berbentuk almond.');
     }
 
     public function test_analisis_gagal_menampilkan_alasan_aman(): void
@@ -160,7 +167,7 @@ class PanelAiTest extends AiTestCase
         $this->prosesAnalisis($a);
         $this->masuk($this->admin);
 
-        Livewire::test(PalmistryAnalysis::class)->call('pilih', $a->id)->assertSee('Analisis gagal')->assertSee('Kunci API Gemini ditolak')->assertDontSee(self::KUNCI);
+        Livewire::test(AnalisisKustom::class)->call('pilih', $a->id)->assertSee('Analisis gagal')->assertSee('Kunci API Gemini ditolak')->assertDontSee(self::KUNCI);
     }
 
     public function test_html_dari_hasil_tidak_dijalankan(): void
@@ -168,7 +175,7 @@ class PanelAiTest extends AiTestCase
         $a = $this->selesai('palmistry', ['garis_hati' => ['status' => 'terlihat_jelas', 'deskripsi_visual' => '<script>alert(1)</script>Garis hati', 'interpretasi_tradisi' => '<b>tebal</b>']]);
         $this->masuk($this->admin);
 
-        Livewire::test(PalmistryAnalysis::class)->call('pilih', $a->id)->assertDontSeeHtml('<script>alert(1)</script>')->assertSee('Garis hati');
+        Livewire::test(AnalisisKustom::class)->call('pilih', $a->id)->assertDontSeeHtml('<script>alert(1)</script>')->assertSee('Garis hati');
     }
 
     public function test_tampilan_melepas_html_walau_data_tersimpan_sudah_tercemar(): void
@@ -180,7 +187,7 @@ class PanelAiTest extends AiTestCase
         $this->untuk($this->s, fn () => $a->forceFill(['result' => $hasil, 'summary' => '<script>alert(3)</script>ringkas'])->save());
         $this->masuk($this->admin);
 
-        Livewire::test(PalmistryAnalysis::class)->call('pilih', $a->id)->assertDontSeeHtml('<img src=x')->assertDontSeeHtml('<script>alert')->assertSeeHtml('&lt;script&gt;alert(2)');
+        Livewire::test(AnalisisKustom::class)->call('pilih', $a->id)->assertDontSeeHtml('<img src=x')->assertDontSeeHtml('<script>alert')->assertSeeHtml('&lt;script&gt;alert(2)');
     }
 
     // ---------- hapus ----------
@@ -190,7 +197,7 @@ class PanelAiTest extends AiTestCase
         $a = $this->selesai();
         $jalur = $a->image_path;
         $this->masuk($this->admin);
-        $k = Livewire::test(PalmistryAnalysis::class)->call('pilih', $a->id);
+        $k = Livewire::test(AnalisisKustom::class)->call('pilih', $a->id);
 
         $k->call('hapusFoto', $a->id)->assertNotified('Foto dihapus. Hasil analisis tetap tersimpan.')->assertSee('Foto sudah dihapus.')->assertSee('Garis kehidupan');
         Storage::disk(AiAnalysis::DISK)->assertMissing($jalur);

@@ -8,10 +8,8 @@ namespace App\Modules\Ai;
  */
 final class Skema
 {
-    public const VERSI_PERSETUJUAN = '2026-11-v2';
-
-    public const TEKS_PERSETUJUAN = 'Saya menyetujui foto ini dikirim ke layanan AI Google Gemini untuk dianalisis dan hasilnya disimpan di sistem sekolah. '
-        .'Saya memahami bahwa hasilnya adalah interpretasi tradisional untuk hiburan, bukan penilaian ilmiah, dan foto serta hasilnya dapat dihapus kapan saja.';
+    /** Persetujuan foto tidak lagi diminta; nilai ini sengaja tercatat pada tiap analisis agar audit menunjukkan bahwa tidak ada persetujuan yang dikumpulkan. */
+    public const VERSI_PERSETUJUAN = 'tidak-diminta';
 
     public const KETERANGAN = [
         'Hasil palmistri dan fisiognomi adalah interpretasi tradisional atau budaya untuk hiburan, bukan penilaian ilmiah, psikologis, atau medis.',

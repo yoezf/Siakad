@@ -2,7 +2,7 @@
 
 namespace Tests\Feature\Ai;
 
-use App\Filament\Sekolah\Pages\PalmistryAnalysis;
+use App\Filament\Sekolah\Pages\AnalisisKustom;
 use App\Filament\Sekolah\Pages\RiwayatAnalisis;
 use App\Jobs\ProsesAnalisisAi;
 use App\Models\AiAnalysis;
@@ -79,7 +79,7 @@ class MacetTest extends AiTestCase
         $this->masukPanel($this->admin, 'sekolah', $this->s);
         Queue::fake();
 
-        Livewire::test(PalmistryAnalysis::class)->call('pilih', $a->id)->assertSeeHtml('data-testid="ulangi-ai"')->call('ulangi', $a->id)->assertNotified('Analisis dikirim ulang ke antrean.');
+        Livewire::test(AnalisisKustom::class)->call('pilih', $a->id)->assertSeeHtml('data-testid="ulangi-ai"')->call('ulangi', $a->id)->assertNotified('Analisis dikirim ulang ke antrean.');
 
         $baru = $this->segar($a);
         $this->assertSame(['menunggu', null], [$baru->status, $baru->error]);
@@ -90,7 +90,7 @@ class MacetTest extends AiTestCase
     {
         $a = $this->gagal();
         $this->masukPanel($this->admin, 'sekolah', $this->s);
-        Livewire::test(PalmistryAnalysis::class)->call('ulangi', $a->id);
+        Livewire::test(AnalisisKustom::class)->call('ulangi', $a->id);
         $this->fakeHttp(['*' => \Illuminate\Support\Facades\Http::response($this->responsGemini($this->palmMentah()))]);
 
         $this->prosesAnalisis($a);
@@ -105,7 +105,7 @@ class MacetTest extends AiTestCase
         $this->masukPanel($this->admin, 'sekolah', $this->s);
         Queue::fake();
 
-        $k = Livewire::test(PalmistryAnalysis::class)->call('ulangi', $a->id)->assertNotified('Foto sudah dihapus, jadi tidak bisa diulang. Unggah foto lagi.');
+        $k = Livewire::test(AnalisisKustom::class)->call('ulangi', $a->id)->assertNotified('Foto sudah dihapus, jadi tidak bisa diulang. Unggah foto lagi.');
         Queue::assertNothingPushed();
 
         $this->fakeHttp(['*' => \Illuminate\Support\Facades\Http::response($this->responsGemini($this->palmMentah()))]);
@@ -138,11 +138,11 @@ class MacetTest extends AiTestCase
         $a = $this->buat();
         $this->masukPanel($this->admin, 'sekolah', $this->s);
 
-        $k = Livewire::test(PalmistryAnalysis::class)->call('pilih', $a->id)->assertSeeHtml('data-testid="proses-ai"')->assertDontSeeHtml('data-testid="macet-ai"');
+        $k = Livewire::test(AnalisisKustom::class)->call('pilih', $a->id)->assertSeeHtml('data-testid="proses-ai"')->assertDontSeeHtml('data-testid="macet-ai"');
 
         AiAnalysis::withoutGlobalScopes()->whereKey($a->id)->update(['updated_at' => now()->subSeconds(200)]);
 
-        $k->call('pilih', $a->id)->assertSeeHtml('data-testid="macet-ai"')->assertSee('tidak normal')->assertSee('Antrean AI')->assertSee('Coba lagi')->assertDontSeeHtml('data-testid="proses-ai"');
+        $k->call('pilih', $a->id)->assertSeeHtml('data-testid="macet-ai"')->assertSee('tidak normal')->assertSee('terputus')->assertSee('Coba lagi')->assertDontSeeHtml('data-testid="proses-ai"');
     }
 
     public function test_hitungan_detik_dihitung_sejak_perubahan_terakhir_bukan_sejak_dibuat(): void
@@ -151,7 +151,7 @@ class MacetTest extends AiTestCase
         AiAnalysis::withoutGlobalScopes()->whereKey($a->id)->update(['created_at' => now()->subSeconds(500), 'updated_at' => now()->subSeconds(5)]);
         $this->masukPanel($this->admin, 'sekolah', $this->s);
 
-        Livewire::test(PalmistryAnalysis::class)->call('pilih', $a->id)->assertSeeHtml('data-testid="proses-ai"')->assertDontSeeHtml('data-testid="macet-ai"');
+        Livewire::test(AnalisisKustom::class)->call('pilih', $a->id)->assertSeeHtml('data-testid="proses-ai"')->assertDontSeeHtml('data-testid="macet-ai"');
     }
 
     public function test_foto_tetap_ada_setelah_gagal_agar_bisa_diulang(): void

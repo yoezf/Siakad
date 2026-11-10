@@ -5,7 +5,6 @@ namespace App\Filament\Sekolah\Support;
 use App\Models\AiAnalysis;
 use App\Models\AiPrompt;
 use App\Modules\Ai\BuatAnalisis;
-use App\Modules\Ai\Skema;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Illuminate\Auth\Access\AuthorizationException;
@@ -29,14 +28,6 @@ abstract class HalamanAnalisis extends Page
 
     public string $subjek = '';
 
-    public string $pemberi = '';
-
-    public string $hubungan = 'diri_sendiri';
-
-    public bool $setuju = false;
-
-    public bool $dewasa = false;
-
     public ?int $promptId = null;
 
     public static function canAccess(): bool
@@ -47,11 +38,6 @@ abstract class HalamanAnalisis extends Page
     public function jenis(): string
     {
         return static::$jenis;
-    }
-
-    public function teksPersetujuan(): string
-    {
-        return Skema::TEKS_PERSETUJUAN;
     }
 
     /** @return Collection<int, AiPrompt> */
@@ -74,8 +60,7 @@ abstract class HalamanAnalisis extends Page
         }
         try {
             $prompt = static::$jenis === 'custom' && $this->promptId ? AiPrompt::find($this->promptId) : null; // id dari peramban: hanya prompt sekolah ini yang ditemukan
-            $a = BuatAnalisis::handle(auth()->user(), static::$jenis, $this->foto, ['subject_name' => $this->subjek, 'consent_name' => $this->pemberi,
-                'consent_relation' => $this->hubungan, 'setuju' => $this->setuju, 'dewasa' => $this->dewasa], $prompt);
+            $a = BuatAnalisis::handle(auth()->user(), static::$jenis, $this->foto, ['subject_name' => $this->subjek], $prompt);
         } catch (ValidationException $e) {
             Notification::make()->danger()->persistent()->title('Tidak bisa diproses')->body(collect($e->errors())->flatten()->implode(' '))->send();
 
@@ -86,7 +71,7 @@ abstract class HalamanAnalisis extends Page
             return;
         }
         $this->analisisId = $a->id;
-        $this->reset('foto', 'setuju', 'dewasa'); // persetujuan harus diberikan lagi untuk foto berikutnya
+        $this->reset('foto');
         Notification::make()->success()->title('Foto diterima dan sedang dianalisis.')->send();
     }
 
