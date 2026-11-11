@@ -3,8 +3,8 @@
         <h3 class="ui-title">{{ $this->editId ? 'Ubah prompt' : 'Tulis prompt baru' }}</h3>
         <p class="ui-sub" style="margin-bottom:1rem">
             Tulis instruksi untuk AI, misalnya apa yang harus dideskripsikan dari foto dan bagaimana format jawabannya. Prompt disimpan, lalu dipilih di menu
-            <strong>Analisis dengan Prompt</strong> bersama foto yang akan dianalisis. Prompt yang meminta kesimpulan tentang kecerdasan, kesehatan, suku, agama, atau
-            watak seseorang ditolak.
+            <strong>Analisis dengan Prompt</strong> bersama foto yang akan dianalisis. Prompt yang meminta kesimpulan tentang penyakit atau diagnosis, suku, ras, agama,
+            orientasi seksual, atau status hukum seseorang ditolak.
         </p>
         <div class="ui-form">
             <label>Nama prompt

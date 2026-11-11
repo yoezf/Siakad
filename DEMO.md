@@ -107,7 +107,7 @@ Login `admin@harapanbangsa.demo` > grup menu **Analisis AI**.
 - **Analisis dengan Prompt:** pilih prompt (misalnya **Palmistry gaya chat**), klik **Ambil foto (kamera)** atau **Pilih dari galeri**, lalu **Analisis foto**. Tidak ada isian wajib lain. Hasil muncul sekitar 4 sampai 15 detik.
 - Coba prompt berbeda pada foto berbeda (benda, tulisan, telapak tangan) untuk menunjukkan fleksibilitasnya: satu alat, prompt yang menentukan hasil.
 - **Riwayat** dan **Statistik:** semua tercatat; foto dan hasil bisa dihapus kapan saja.
-- Katakan dengan jelas: fitur ini **mati bawaan**, dinyalakan per sekolah oleh Super Admin, hanya admin sekolah yang memakainya, dan jawaban yang menyimpulkan hal sensitif tentang orang (kecerdasan, penyakit, suku, agama, dan dari wajah juga watak atau nasib) ditolak atau disaring.
+- Katakan dengan jelas: fitur ini **mati bawaan**, dinyalakan per sekolah oleh Super Admin, hanya admin sekolah yang memakainya, dan jawaban yang menyimpulkan hal sensitif tentang orang (penyakit atau diagnosis, suku, ras, agama, orientasi seksual, status hukum) ditolak atau disaring.
 - Hasil palmistri adalah tafsir tradisi untuk hiburan, bukan sains.
 
 ---

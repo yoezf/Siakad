@@ -51,8 +51,8 @@ class PromptKustomTest extends AiTestCase
     public function test_prompt_yang_meminta_kesimpulan_terlarang_ditolak(): void
     {
         foreach ([
-            'Tentukan kecerdasan orang di foto.', 'Tebak suku dan etnis orang ini dari fotonya.', 'Apa agama orang di foto ini?', 'Apakah orang ini punya penyakit? Berikan diagnosis.',
-            'Dari wajah ini, jelaskan kepribadian dan sifatnya.', 'Lihat wajah ini lalu ramalkan nasib dan jodohnya.', 'Nilai apakah muka orang ini jujur atau tidak.',
+            'Tebak suku dan etnis orang ini dari fotonya.', 'Apa agama orang di foto ini?', 'Apakah orang ini punya penyakit? Berikan diagnosis.',
+            'Dari wajah ini, tebak orientasi seksualnya.', 'Lihat wajah ini lalu tebak ras dan sukunya.',
         ] as $isi) {
             try {
                 $this->prompt('Prompt uji', $isi);
@@ -74,8 +74,8 @@ class PromptKustomTest extends AiTestCase
     public function test_pemeriksa_prompt_mengembalikan_alasan_atau_null(): void
     {
         $this->assertNull(Skema::promptTerlarang('Sebutkan benda di foto.'));
-        $this->assertStringContainsString('kecerdasan', (string) Skema::promptTerlarang('Nilai kecerdasan orang ini'));
-        $this->assertStringContainsString('wajah', (string) Skema::promptTerlarang('Dari wajahnya, apa sifatnya?'));
+        $this->assertStringContainsString('suku', (string) Skema::promptTerlarang('Tebak suku orang ini'));
+        $this->assertNull(Skema::promptTerlarang('Dari wajahnya, apa sifat, kecerdasan, dan nasibnya?'), 'watak, moral, kecerdasan, nasib, kesehatan umum kini boleh');
     }
 
     public function test_nama_prompt_unik_per_sekolah(): void
@@ -101,7 +101,7 @@ class PromptKustomTest extends AiTestCase
             $teks = $q->data()['contents'][0]['parts'][0]['text'];
             $skema = $q->data()['generationConfig']['responseSchema'];
 
-            return str_contains($teks, 'JANGAN menyimpulkan kepribadian')
+            return str_contains($teks, 'JANGAN menyimpulkan penyakit atau diagnosis')
                 && str_contains($teks, "INSTRUKSI PENGGUNA:\nSebutkan benda di foto dan hitung jumlahnya.")
                 && array_keys($skema['properties']) === ['keterbacaan_gambar', 'jawaban', 'catatan_keterbatasan'];
         });
@@ -153,25 +153,29 @@ class PromptKustomTest extends AiTestCase
         $this->assertStringNotContainsString('suku', $r['hasil']['jawaban']);
     }
 
-    public function test_penyaring_wajah_lebih_ketat_hanya_bila_prompt_menyangkut_wajah(): void
+    public function test_watak_moral_dan_kesehatan_umum_tidak_disaring_termasuk_untuk_wajah(): void
     {
-        $jawaban = ['jawaban' => 'Cangkir itu tampak jujur dan sehat.'];
+        $jawaban = ['jawaban' => 'Wajahnya tampak jujur, cerdas, sehat, dan bernasib baik.'];
 
-        $this->assertStringContainsString('jujur', $this->kustom($jawaban, 'Deskripsikan benda di foto.')['hasil']['jawaban'], 'bukan wajah: kata umum tidak disaring');
-        $this->assertStringContainsString('disaring', $this->kustom($jawaban, 'Deskripsikan wajah di foto.')['hasil']['jawaban'], 'menyangkut wajah: disaring');
+        foreach (['Deskripsikan benda di foto.', 'Deskripsikan wajah di foto.'] as $prompt) {
+            $r = $this->kustom($jawaban, $prompt);
+            $this->assertStringContainsString('jujur', $r['hasil']['jawaban']);
+            $this->assertSame([], $r['hasil']['disaring']);
+        }
     }
 
     // ---------- konteks telapak tangan dan penyaringan per kalimat ----------
 
     private const TANGAN = 'Analisis telapak tangan ini seperti ahli palmistri.';
 
-    public function test_tafsir_tradisi_tangan_boleh_membahas_kecerdasan_dan_watak_tetapi_bukan_kematian(): void
+    public function test_tafsir_tradisi_tangan_boleh_membahas_watak_dan_kematian_tetapi_bukan_penyakit(): void
     {
-        $r = $this->kustom(['jawaban' => 'Garis kepala melambangkan kecerdasan dan kepribadian yang tenang. Garis hidup pendek pertanda kematian dini. Garis hati melengkung.'], self::TANGAN);
+        $r = $this->kustom(['jawaban' => 'Garis kepala melambangkan kecerdasan dan kepribadian yang tenang. Garis hidup pendek pertanda kematian dini. Garis hati menandakan penyakit jantung. Garis hati melengkung.'], self::TANGAN);
 
         $this->assertStringContainsString('kecerdasan dan kepribadian yang tenang', $r['hasil']['jawaban']);
+        $this->assertStringContainsString('kematian dini', $r['hasil']['jawaban']);
         $this->assertStringContainsString('Garis hati melengkung.', $r['hasil']['jawaban'], 'kalimat lain tetap tampil');
-        $this->assertStringNotContainsString('kematian', $r['hasil']['jawaban']);
+        $this->assertStringNotContainsString('penyakit', $r['hasil']['jawaban']);
         $this->assertSame(['jawaban'], $r['hasil']['disaring']);
     }
 
@@ -190,31 +194,28 @@ class PromptKustomTest extends AiTestCase
 
     public function test_konteks_wajah_menang_bila_prompt_menyebut_tangan_dan_wajah(): void
     {
-        $r = $this->kustom(['jawaban' => 'Garis kepala melambangkan kecerdasan.'], 'Baca garis tangan dan wajahnya.');
+        $jawaban = ['jawaban' => 'Orang ini tampak kaukasia.'];
 
-        $this->assertStringContainsString('disaring', $r['hasil']['jawaban']);
+        $this->assertStringContainsString('kaukasia', $this->kustom($jawaban, self::TANGAN)['hasil']['jawaban'], 'daftar tangan lebih sempit');
+        $this->assertStringContainsString('disaring', $this->kustom($jawaban, 'Baca garis tangan dan wajahnya.')['hasil']['jawaban']);
     }
 
-    public function test_prompt_tangan_menolak_kematian_penyakit_dan_asal_usul_tetapi_menerima_kecerdasan(): void
+    public function test_prompt_tangan_menolak_penyakit_dan_asal_usul_tetapi_menerima_kecerdasan_dan_kematian(): void
     {
         $this->assertNull(Skema::promptTerlarang('Jelaskan garis kepala dan kecerdasan dari telapak tangan ini menurut palmistri.'));
         $this->assertNull(Skema::promptTerlarang('Baca garis tangan ini, ceritakan watak dan nasib menurut tradisi.'));
-        foreach (['Dari telapak tangan ini, tebak suku orangnya.', 'Dari telapak tangan ini apakah ada penyakit jantung?', 'Dari garis tangan, kapan kematiannya?', 'Dari telapak tangan, apa agamanya?'] as $isi) {
+        $this->assertNull(Skema::promptTerlarang('Dari garis tangan, kapan kematiannya menurut tradisi?'));
+        foreach (['Dari telapak tangan ini, tebak suku orangnya.', 'Dari telapak tangan ini apakah ada penyakit jantung?', 'Dari telapak tangan, apa agamanya?'] as $isi) {
             $this->assertNotNull(Skema::promptTerlarang($isi), $isi);
         }
     }
 
-    public function test_aturan_wajib_menyesuaikan_konteks_tangan_dan_tetap_ketat_untuk_lainnya(): void
+    public function test_aturan_wajib_membolehkan_tafsiran_tetapi_tetap_melarang_data_sensitif(): void
     {
-        $tangan = Skema::prompt('custom', self::TANGAN);
-        $umum = Skema::prompt('custom', 'Sebutkan isi foto.');
-        $wajah = Skema::prompt('custom', 'Deskripsikan wajah di foto.');
-
-        $this->assertStringContainsString('tafsir tradisi palmistri', $tangan);
-        $this->assertStringNotContainsString('Dari foto orang, JANGAN menyimpulkan kepribadian', $tangan);
-        $this->assertStringContainsString('JANGAN menyimpulkan kematian, penyakit', $tangan);
-        foreach ([$umum, $wajah] as $p) {
-            $this->assertStringContainsString('Dari foto orang, JANGAN menyimpulkan kepribadian', $p);
+        foreach ([self::TANGAN, 'Sebutkan isi foto.', 'Deskripsikan wajah di foto.'] as $isi) {
+            $p = Skema::prompt('custom', $isi);
+            $this->assertStringContainsString('Tafsiran watak', $p);
+            $this->assertStringContainsString('JANGAN menyimpulkan penyakit atau diagnosis, suku, etnis, ras, agama, orientasi seksual, atau status hukum', $p);
         }
     }
 
@@ -337,7 +338,7 @@ class PromptKustomTest extends AiTestCase
         $k = Livewire::test(PromptKustom::class);
 
         $k->set('nama', 'ab')->set('isi', 'pendek')->call('simpan')->assertNotified('Prompt belum bisa disimpan');
-        $k->set('nama', 'Prompt jahat')->set('isi', 'Tentukan kecerdasan orang di foto ini.')->call('simpan')->assertNotified('Prompt belum bisa disimpan');
+        $k->set('nama', 'Prompt jahat')->set('isi', 'Tentukan suku dan agama orang di foto ini.')->call('simpan')->assertNotified('Prompt belum bisa disimpan');
         $this->assertSame(0, AiPrompt::count());
 
         $this->prompt('Sama');
