@@ -59,6 +59,8 @@ class RolePermissionSeeder extends Seeder
             // Analisis AI (foto tangan dan wajah = data pribadi): hanya admin sekolah, dan hanya bila fitur analisis_ai dinyalakan Super Admin.
             'lihat-analisis-ai' => [Peran::ADMIN_SEKOLAH],
             'kelola-analisis-ai' => [Peran::ADMIN_SEKOLAH],
+            // Absensi wajah (data biometrik siswa): hanya admin sekolah yang mendaftarkan dan menghapus wajah, dan hanya bila fitur absensi_wajah menyala.
+            'kelola-data-wajah' => [Peran::ADMIN_SEKOLAH],
             'lihat-jadwal' => Peran::PANEL_SEKOLAH, // jadwal bukan data pribadi
             'kelola-jadwal' => [Peran::ADMIN_SEKOLAH, Peran::STAF_TU],
             // Wali kelas dan guru mata pelajaran melihat siswa di kelas yang mereka walikan atau ampu saja.

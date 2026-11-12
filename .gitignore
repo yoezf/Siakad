@@ -34,3 +34,5 @@ Thumbs.db
 # Berkas lokal pengembangan (kata sandi uji, contoh hasil ekspor)
 /catatan-akun-uji-lokal.txt
 /storage/app/contoh-laporan
+/storage/tmp
+/.https

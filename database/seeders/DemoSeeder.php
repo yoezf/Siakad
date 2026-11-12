@@ -86,7 +86,7 @@ class DemoSeeder extends Seeder
     private function sd(): void
     {
         [$s, $admin, $kepala, $y, $sem] = $this->mulaiSekolah([
-            'name' => 'SD Harapan Bangsa', 'city' => 'Bandung', 'plan' => 'lengkap', 'fitur' => ['ujian', 'tugas', 'analisis_ai'], 'levels' => ['sd'], 'domain' => 'harapanbangsa.demo',
+            'name' => 'SD Harapan Bangsa', 'city' => 'Bandung', 'plan' => 'lengkap', 'fitur' => ['ujian', 'tugas', 'analisis_ai', 'absensi_wajah'], 'levels' => ['sd'], 'domain' => 'harapanbangsa.demo',
             'kepala' => ['Drs. H. Ahmad Fauzi, M.Pd.', '196805121994031004'], 'kkm' => 70, 'alamat' => 'Jl. Merdeka No. 45, Bandung', 'telepon' => '022-4231188',
         ]);
 

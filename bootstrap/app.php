@@ -14,6 +14,10 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias(['fitur' => EnsureFeature::class]);
+        // Hanya untuk jalankan-hp-aman.bat (proksi HTTPS lokal): agar alamat aset memakai https. Jangan diaktifkan di server sungguhan.
+        if (env('TRUST_PROXY_LOKAL') === 'true' || env('TRUST_PROXY_LOKAL') === true) {
+            $middleware->trustProxies(at: '*');
+        }
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(
