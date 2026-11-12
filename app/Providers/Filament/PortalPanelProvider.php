@@ -27,11 +27,14 @@ class PortalPanelProvider extends PanelProvider
             ->id('portal')
             ->path('portal')
             ->login()
+            ->brandLogo(fn () => view('components.brand-logo'))
+            ->brandLogoHeight('2.25rem')
+            ->favicon(fn () => asset('favicon.svg'))
             ->defaultThemeMode(\Filament\Enums\ThemeMode::Light)
             ->topNavigation()
             ->maxContentWidth(\Filament\Support\Enums\Width::SevenExtraLarge)
             ->tenant(School::class, slugAttribute: 'slug')
-            ->colors(['primary' => '#047857'])
+            ->colors(['primary' => '#6366f1'])
             ->pages([Beranda::class])
             ->middleware([
                 EncryptCookies::class,

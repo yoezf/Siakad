@@ -1,4 +1,4 @@
-# Naskah demo investor: Digital Student Portfolio
+# Naskah demo investor: Hormone Growth
 
 Sistem rapor dan manajemen sekolah untuk **banyak sekolah dalam satu platform**. Nama produk masih sementara.
 Demo ini berjalan lokal dengan data contoh (bukan data asli): dua sekolah berbeda jenjang, SD dan SMP, dengan akun untuk setiap peran.

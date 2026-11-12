@@ -28,12 +28,15 @@ class SekolahPanelProvider extends PanelProvider
             ->id('sekolah')
             ->path('sekolah')
             ->login()
+            ->brandLogo(fn () => view('components.brand-logo'))
+            ->brandLogoHeight('2.25rem')
+            ->favicon(fn () => asset('favicon.svg'))
             ->defaultThemeMode(\Filament\Enums\ThemeMode::Light)
             ->sidebarCollapsibleOnDesktop()
             ->tenant(School::class, slugAttribute: 'slug')
             ->tenantProfile(ProfilSekolah::class)
             ->colors([
-                'primary' => '#0e7490',
+                'primary' => '#6366f1',
             ])
             ->discoverResources(in: app_path('Filament/Sekolah/Resources'), for: 'App\Filament\Sekolah\Resources')
             ->discoverPages(in: app_path('Filament/Sekolah/Pages'), for: 'App\Filament\Sekolah\Pages')

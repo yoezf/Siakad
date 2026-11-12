@@ -27,10 +27,13 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
+            ->brandLogo(fn () => view('components.brand-logo'))
+            ->brandLogoHeight('2.25rem')
+            ->favicon(fn () => asset('favicon.svg'))
             ->defaultThemeMode(\Filament\Enums\ThemeMode::Light)
             ->sidebarCollapsibleOnDesktop()
             ->colors([
-                'primary' => Color::Cyan,
+                'primary' => '#6366f1',
             ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
