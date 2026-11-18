@@ -182,6 +182,23 @@ class LaporanTest extends RaporTestCase
         $this->assertEquals(76.33, $lembar->getCell("G{$awal}")->getValue());
     }
 
+    public function test_excel_berkepala_indigo_bergaris_dan_angka_rata_tengah(): void
+    {
+        $this->lengkapi();
+        $lembar = $this->bacaXlsx(Ekspor::xlsx($this->rekapNilai()));
+        $kepala = collect($lembar->toArray())->search(fn ($r) => ($r[0] ?? null) === 'No') + 1; // nomor baris lembar kepala tabel
+        $data = $kepala + 1;
+
+        $this->assertSame('4F46E5', $lembar->getStyle("A{$kepala}")->getFill()->getStartColor()->getRGB());
+        $this->assertSame('FFFFFF', $lembar->getStyle("D{$kepala}")->getFont()->getColor()->getRGB());
+        $this->assertTrue($lembar->getStyle("A{$kepala}")->getFont()->getBold());
+        $this->assertSame('3730A3', $lembar->getStyle('A1')->getFont()->getColor()->getRGB(), 'nama sekolah berwarna tema');
+        $this->assertSame('thin', $lembar->getStyle("D{$data}")->getBorders()->getTop()->getBorderStyle());
+        $this->assertSame('center', $lembar->getStyle("D{$data}")->getAlignment()->getHorizontal());
+        $this->assertNotSame('center', $lembar->getStyle("B{$data}")->getAlignment()->getHorizontal(), 'kolom nama tetap rata kiri');
+        $this->assertSame('A'.$data, $lembar->getFreezePane());
+    }
+
     public function test_excel_tidak_menjalankan_rumus_dari_nama_siswa(): void
     {
         $rumus = '=HYPERLINK("http://jahat.example","klik")';

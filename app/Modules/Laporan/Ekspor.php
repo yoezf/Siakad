@@ -5,6 +5,9 @@ namespace App\Modules\Laporan;
 use Barryvdh\DomPDF\Facade\Pdf;
 use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Style\Border;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 /** Mengubah tabel laporan menjadi PDF atau Excel. Isi sel yang berupa teks selalu disimpan sebagai teks (bukan rumus). */
@@ -30,8 +33,15 @@ final class Ekspor
         $kepala = $r;
         foreach (array_values($tabel['kolom']) as $c => $nama) {
             $lembar->setCellValueExplicit([$c + 1, $r], (string) $nama, DataType::TYPE_STRING);
-            $lembar->getStyle([$c + 1, $r])->getFont()->setBold(true);
         }
+        // Gaya: judul tebal, kepala tabel berlatar indigo bertulisan putih, garis tipis, kolom angka rata tengah.
+        $lembar->getStyle([1, 1])->getFont()->setBold(true)->setSize(14)->getColor()->setRGB('3730A3');
+        $lembar->getStyle([1, 2])->getFont()->setBold(true)->setSize(12);
+        $jumlahKolom = count($tabel['kolom']);
+        $kepalaTabel = $lembar->getStyle([1, $r, $jumlahKolom, $r]);
+        $kepalaTabel->getFont()->setBold(true)->getColor()->setRGB('FFFFFF');
+        $kepalaTabel->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB('4F46E5');
+        $kepalaTabel->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER)->setVertical(Alignment::VERTICAL_CENTER);
         foreach ($tabel['baris'] as $baris) {
             $r++;
             foreach (array_values($baris) as $c => $sel) {
@@ -42,6 +52,10 @@ final class Ekspor
                     ? $lembar->setCellValueExplicit([$c + 1, $r], $sel, DataType::TYPE_NUMERIC)
                     : $lembar->setCellValueExplicit([$c + 1, $r], (string) $sel, DataType::TYPE_STRING); // "=1+1" tetap teks
             }
+        }
+        if ($r > $kepala) {
+            $lembar->getStyle([1, $kepala, $jumlahKolom, $r])->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN)->getColor()->setRGB('CDD1EA');
+            $lembar->getStyle([3, $kepala + 1, $jumlahKolom, $r])->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
         }
         $lembar->freezePane([1, $kepala + 1]);
         foreach (range(1, count($tabel['kolom'])) as $c) {

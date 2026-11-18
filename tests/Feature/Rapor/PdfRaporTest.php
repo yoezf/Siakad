@@ -26,6 +26,21 @@ class PdfRaporTest extends RaporTestCase
         $this->assertStringContainsString('%%EOF', $pdf);
     }
 
+    public function test_rapor_standar_muat_satu_halaman_dan_memakai_gaya_tema(): void
+    {
+        $this->siapSahkan();
+        $v = $this->sahkan();
+
+        $pdf = $this->untuk($this->s, fn () => PdfRapor::render($v->fresh()));
+        $html = $this->html($v);
+
+        $this->assertSame(1, preg_match_all('#/Type\s*/Page[^s]#', $pdf), 'rapor biasa harus satu halaman termasuk tanda tangan');
+        $this->assertStringContainsString('#4f46e5', $html, 'kepala tabel berwarna tema');
+        $this->assertStringContainsString('class="kop"', $html);
+        $this->assertStringContainsString('Rata-rata', $html);
+        $this->assertStringContainsString('Catatan Wali Kelas', $html);
+    }
+
     public function test_nama_berkas_memuat_siswa_semester_dan_versi(): void
     {
         $this->siapSahkan();
