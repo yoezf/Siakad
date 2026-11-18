@@ -39,6 +39,8 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         // Gaya bersama halaman buatan sendiri dan penyempurnaan Filament (public/css/ui.css); versi mengikuti waktu ubah berkas agar tidak tersimpan usang di peramban.
+        // Sisi kiri halaman masuk (teks sambutan); disembunyikan lewat CSS di layar kecil.
+        FilamentView::registerRenderHook(PanelsRenderHook::SIMPLE_LAYOUT_START, fn () => view('components.login-hero')->render());
         FilamentView::registerRenderHook(PanelsRenderHook::HEAD_END, fn () => '<link rel="stylesheet" href="'.asset('css/ui.css').'?v='.filemtime(public_path('css/ui.css')).'">');
 
         // Filament memeriksa policy pada setiap aksi, bukan hanya menu. Tanpa policy, aksi yang dipanggil langsung lolos.
