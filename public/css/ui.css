@@ -285,11 +285,6 @@ textarea.ui-input { font-family: inherit; line-height: 1.5; resize: vertical; }
 .fi-sidebar .fi-tenant-menu button, .fi-sidebar .fi-tenant-menu .fi-tenant-menu-trigger { background: rgba(255, 255, 255, .14) !important; color: #fff !important; border-radius: 14px; }
 .fi-sidebar .fi-tenant-menu * { color: #fff; }
 
-.sb-profil { display: flex; align-items: center; gap: .75rem; padding: .9rem .75rem; margin-bottom: .75rem; border-radius: 16px; background: rgba(255, 255, 255, .14); color: #fff; }
-.sb-avatar { width: 2.6rem; height: 2.6rem; border-radius: 50%; background: #fff; color: var(--primary-700, #4338ca); font-weight: 800; display: flex; align-items: center; justify-content: center; flex: none; }
-.sb-profil-teks { display: flex; flex-direction: column; min-width: 0; line-height: 1.25; }
-.sb-profil-teks strong { font-size: .9rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.sb-profil-teks span { font-size: .75rem; opacity: .8; }
 
 .dash-card { background: var(--ui-surface); border-radius: 20px; padding: 1.3rem 1.4rem; box-shadow: var(--ui-shadow); height: 100%; }
 .dash-judul { font-weight: 700; font-size: 1rem; margin: 0 0 .9rem; color: var(--ui-text); }
@@ -332,9 +327,21 @@ textarea.ui-input { font-family: inherit; line-height: 1.5; resize: vertical; }
 .fi-sidebar-nav { overflow-x: hidden; scrollbar-width: thin; scrollbar-color: rgba(255, 255, 255, .4) transparent; }
 .fi-sidebar-nav::-webkit-scrollbar { width: 6px; }
 .fi-sidebar-nav::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, .4); border-radius: 999px; }
-.fi-sidebar:not(.fi-sidebar-open) .sb-profil { background: transparent; padding: .25rem 0; justify-content: center; margin-bottom: .5rem; }
-.fi-sidebar:not(.fi-sidebar-open) .sb-profil-teks { display: none; }
-.fi-sidebar:not(.fi-sidebar-open) .sb-avatar { width: 2.4rem; height: 2.4rem; font-size: .85rem; }
 .fi-sidebar:not(.fi-sidebar-open) .fi-sidebar-group-label { display: none; }
 .fi-sidebar:not(.fi-sidebar-open) .fi-sidebar-group:not(:first-child) { margin-top: .75rem; padding-top: .75rem; border-top: 1px solid rgba(255, 255, 255, .22); }
 .fi-sidebar:not(.fi-sidebar-open) .fi-tenant-menu button { padding: .35rem; justify-content: center; }
+
+/* nama sekolah di tengah bilah atas; pemilih sekolah di sidebar disembunyikan */
+.fi-sidebar .fi-tenant-menu { display: none !important; }
+.topbar-sekolah { display: inline-flex; align-items: center; gap: .5rem; margin-left: .85rem; padding-left: .95rem; border-left: 1px solid var(--ui-border-strong); max-width: 30vw;
+    font-weight: 600; font-size: .9rem; color: var(--ui-text); text-decoration: none; min-width: 0; }
+.topbar-sekolah span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.topbar-sekolah-ikon { width: 1.2rem; height: 1.2rem; flex: none; color: var(--ui-accent); }
+a.topbar-sekolah:hover { color: var(--ui-accent); }
+/* logo dan nama proyek di tengah bilah atas (layar lebar); di bawah 1024 px Filament menyembunyikan bagian kiri, jadi nama sekolah dipusatkan sebagai gantinya */
+.fi-topbar-start > a:not(.topbar-sekolah) { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); }
+.topbar-sekolah-sm { display: none; }
+@media (max-width: 1023px) {
+    .topbar-sekolah-sm { display: inline-flex; position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); margin: 0; padding: 0; border: 0; max-width: 56vw; }
+}
+.fi-topbar { position: sticky; }

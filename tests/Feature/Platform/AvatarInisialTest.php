@@ -19,12 +19,14 @@ class AvatarInisialTest extends TestCase
         return base64_decode(substr($uri, strlen('data:image/svg+xml;base64,')));
     }
 
-    public function test_pengguna_indigo_dengan_dua_inisial_dan_tanpa_layanan_luar(): void
+    public function test_pengguna_berupa_ikon_orang_putih_di_lingkaran_indigo_tanpa_layanan_luar(): void
     {
         $svg = $this->svg((new AvatarInisial)->get(new User(['name' => 'Admin SD Harapan'])));
 
         $this->assertStringContainsString('#6366f1', $svg);
-        $this->assertStringContainsString('>AS<', $svg);
+        $this->assertStringContainsString('fill="#ffffff"', $svg);
+        $this->assertStringContainsString('<path', $svg, 'ikon orang, bukan teks inisial');
+        $this->assertStringNotContainsString('<text', $svg);
         $this->assertStringNotContainsString('http', str_replace('http://www.w3.org/2000/svg', '', $svg));
     }
 
@@ -40,9 +42,10 @@ class AvatarInisialTest extends TestCase
 
     public function test_nama_berisi_tanda_kurung_atau_kosong_tidak_merusak_svg(): void
     {
-        $a = $this->svg((new AvatarInisial)->get(new User(['name' => '<script>x</script> Budi'])));
-        $this->assertStringNotContainsString('<script>', $a);
+        $sekolah = $this->sekolah('<script>x</script> Budi');
+        $this->assertStringNotContainsString('<script>', $this->svg((new AvatarInisial)->get($sekolah)));
 
-        $this->assertStringContainsString('>?<', $this->svg((new AvatarInisial)->get(new User(['name' => '   ']))));
+        $sekolah->name = '   ';
+        $this->assertStringContainsString('>?<', $this->svg((new AvatarInisial)->get($sekolah)));
     }
 }
