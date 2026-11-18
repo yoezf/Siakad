@@ -345,3 +345,29 @@ a.topbar-sekolah:hover { color: var(--ui-accent); }
     .topbar-sekolah-sm { display: inline-flex; position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); margin: 0; padding: 0; border: 0; max-width: 56vw; }
 }
 .fi-topbar { position: sticky; }
+
+/* =====================================================================
+ * Penyeragaman halaman lain: tombol utama, tabel, jendela dialog, dan navigasi atas portal.
+ * ===================================================================== */
+.fi-btn.fi-color-primary:not(.fi-outlined) {
+    background: linear-gradient(90deg, #4f46e5, #6366f1) !important; border-radius: 12px; box-shadow: 0 6px 14px rgba(79, 70, 229, .28);
+}
+.fi-btn.fi-color-primary:not(.fi-outlined):hover { filter: brightness(1.06); }
+.fi-btn.fi-color-primary:not(.fi-outlined),
+.fi-btn.fi-color-primary:not(.fi-outlined) .fi-btn-label,
+.fi-btn.fi-color-primary:not(.fi-outlined) svg { color: #fff !important; }
+.fi-btn:not(.fi-color-primary) { border-radius: 12px; }
+.fi-modal-window, .fi-modal-slide-over-window { border-radius: 20px !important; }
+.fi-ta-header-cell { text-transform: uppercase; letter-spacing: .04em; font-size: .72rem; }
+.fi-ta-table thead tr { background: var(--ui-soft); }
+.fi-input-wrp { border-radius: 12px; }
+.fi-pagination-item.fi-active, .fi-pagination-item-btn.fi-active { background: var(--ui-accent) !important; color: #fff !important; border-radius: 10px; }
+
+/* portal (navigasi atas): tab aktif berupa pil berwarna utama */
+.fi-panel-portal .fi-topbar-item-btn { border-radius: 999px !important; }
+.fi-panel-portal .fi-topbar-item.fi-active > .fi-topbar-item-btn { background: var(--ui-accent) !important; box-shadow: 0 6px 14px color-mix(in srgb, var(--ui-accent) 30%, transparent); }
+.fi-panel-portal .fi-topbar-item.fi-active > .fi-topbar-item-btn *, .fi-panel-portal .fi-topbar-item.fi-active .fi-topbar-item-label { color: #fff !important; }
+
+/* portal: navigasi atas berisi menu, jadi logo tidak dipusatkan dan pemilih sekolah (sudah ada nama sekolah di kiri) disembunyikan */
+.fi-topbar .fi-tenant-menu { display: none !important; }
+.fi-panel-portal .fi-topbar-start > a:not(.topbar-sekolah) { position: static; transform: none; margin-left: .85rem; }
