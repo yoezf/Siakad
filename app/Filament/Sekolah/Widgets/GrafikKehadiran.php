@@ -8,7 +8,9 @@ use Filament\Widgets\ChartWidget;
 /** Kehadiran harian siswa pada 7 hari terakhir yang tercatat: hadir (H, T) dan tidak hadir (S, I, A). Dibatasi pada sekolah yang sedang dibuka. */
 class GrafikKehadiran extends ChartWidget
 {
-    protected static ?int $sort = -8;
+    protected static ?int $sort = -10;
+
+    protected int|string|array $columnSpan = ['default' => 'full', 'xl' => 4];
 
     protected static bool $isLazy = false;
 

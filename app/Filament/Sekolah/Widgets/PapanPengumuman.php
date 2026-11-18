@@ -9,13 +9,13 @@ use Illuminate\Support\Collection;
 /** Empat pengumuman terbit terbaru. Dibatasi pada sekolah yang sedang dibuka; hanya untuk yang boleh melihat pengumuman. */
 class PapanPengumuman extends Widget
 {
-    protected static ?int $sort = -7;
+    protected static ?int $sort = -6;
 
     protected static bool $isLazy = false;
 
     protected string $view = 'filament.sekolah.widgets.papan-pengumuman';
 
-    protected int|string|array $columnSpan = 'full';
+    protected int|string|array $columnSpan = ['default' => 'full', 'xl' => 2];
 
     public static function canView(): bool
     {

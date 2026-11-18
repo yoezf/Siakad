@@ -8,7 +8,9 @@ use Filament\Widgets\ChartWidget;
 /** Siswa aktif menurut jenis kelamin. Dibatasi pada sekolah yang sedang dibuka. */
 class KomposisiSiswa extends ChartWidget
 {
-    protected static ?int $sort = -9;
+    protected static ?int $sort = -8;
+
+    protected int|string|array $columnSpan = ['default' => 'full', 'xl' => 2];
 
     protected static bool $isLazy = false;
 

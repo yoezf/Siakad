@@ -30,6 +30,7 @@ class PortalPanelProvider extends PanelProvider
             ->brandLogo(fn () => view('components.brand-logo'))
             ->brandLogoHeight('2.25rem')
             ->favicon(fn () => asset('favicon.svg'))
+            ->defaultAvatarProvider(\App\Support\AvatarInisial::class)
             ->defaultThemeMode(\Filament\Enums\ThemeMode::Light)
             ->topNavigation()
             ->maxContentWidth(\Filament\Support\Enums\Width::SevenExtraLarge)

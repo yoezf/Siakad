@@ -8,11 +8,10 @@ use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
-use Filament\Pages\Dashboard;
+use App\Filament\Sekolah\Pages\Dasbor;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
-use Filament\Widgets\AccountWidget;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
@@ -31,6 +30,7 @@ class SekolahPanelProvider extends PanelProvider
             ->brandLogo(fn () => view('components.brand-logo'))
             ->brandLogoHeight('2.25rem')
             ->favicon(fn () => asset('favicon.svg'))
+            ->defaultAvatarProvider(\App\Support\AvatarInisial::class)
             ->defaultThemeMode(\Filament\Enums\ThemeMode::Light)
             ->sidebarCollapsibleOnDesktop()
             ->tenant(School::class, slugAttribute: 'slug')
@@ -41,12 +41,9 @@ class SekolahPanelProvider extends PanelProvider
             ->discoverResources(in: app_path('Filament/Sekolah/Resources'), for: 'App\Filament\Sekolah\Resources')
             ->discoverPages(in: app_path('Filament/Sekolah/Pages'), for: 'App\Filament\Sekolah\Pages')
             ->pages([
-                Dashboard::class,
+                Dasbor::class,
             ])
             ->discoverWidgets(in: app_path('Filament/Sekolah/Widgets'), for: 'App\Filament\Sekolah\Widgets')
-            ->widgets([
-                AccountWidget::class,
-            ])
             ->middleware([
                 EncryptCookies::class,
                 AddQueuedCookiesToResponse::class,

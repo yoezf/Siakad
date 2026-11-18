@@ -262,3 +262,79 @@ textarea.ui-input { font-family: inherit; line-height: 1.5; resize: vertical; }
 .login-hero ul { list-style: none; margin: 0; padding: 0; display: grid; gap: .7rem; }
 .login-hero li { display: flex; align-items: center; gap: .75rem; font-weight: 600; }
 .login-hero li .login-ic { width: 2.4rem; height: 2.4rem; padding: .55rem; border-radius: 12px; background: rgba(255, 255, 255, .18); flex: none; stroke: #fff; }
+
+/* tombol MASUK: teks putih */
+.fi-simple-main .fi-btn.fi-color-primary:not(.fi-outlined),
+.fi-simple-main .fi-btn.fi-color-primary:not(.fi-outlined) .fi-btn-label,
+.fi-simple-main .fi-btn.fi-color-primary:not(.fi-outlined) svg { color: #fff !important; }
+
+/* =====================================================================
+ * Dasbor gaya baru: sidebar berwarna dengan kartu profil, kartu cincin, kartu sorot, daftar batang, kalender.
+ * ===================================================================== */
+.fi-topbar, .fi-topbar > nav { background: var(--ui-page) !important; box-shadow: none !important; }
+.fi-sidebar { background: linear-gradient(180deg, var(--primary-700, #4338ca) 0%, var(--primary-500, #6366f1) 100%) !important; border: 0 !important; }
+.fi-sidebar-header, .fi-sidebar-nav { background: transparent !important; box-shadow: none !important; }
+.fi-sidebar .brand-logo, .fi-sidebar .brand-logo-nama { color: #fff !important; }
+.fi-sidebar .fi-sidebar-item-btn { color: rgba(255, 255, 255, .85); }
+.fi-sidebar .fi-sidebar-item-btn svg, .fi-sidebar .fi-sidebar-item-label { color: rgba(255, 255, 255, .85) !important; }
+.fi-sidebar .fi-sidebar-item:not(.fi-active) > .fi-sidebar-item-btn:hover { background: rgba(255, 255, 255, .14) !important; }
+.fi-sidebar .fi-sidebar-item.fi-active > .fi-sidebar-item-btn { background: #fff !important; box-shadow: 0 8px 18px rgba(0, 0, 0, .18); }
+.fi-sidebar .fi-sidebar-item.fi-active > .fi-sidebar-item-btn svg,
+.fi-sidebar .fi-sidebar-item.fi-active > .fi-sidebar-item-btn .fi-sidebar-item-label { color: var(--primary-700, #4338ca) !important; font-weight: 700; }
+.fi-sidebar .fi-sidebar-group-label, .fi-sidebar .fi-sidebar-group-btn svg { color: rgba(255, 255, 255, .6) !important; }
+.fi-sidebar .fi-tenant-menu button, .fi-sidebar .fi-tenant-menu .fi-tenant-menu-trigger { background: rgba(255, 255, 255, .14) !important; color: #fff !important; border-radius: 14px; }
+.fi-sidebar .fi-tenant-menu * { color: #fff; }
+
+.sb-profil { display: flex; align-items: center; gap: .75rem; padding: .9rem .75rem; margin-bottom: .75rem; border-radius: 16px; background: rgba(255, 255, 255, .14); color: #fff; }
+.sb-avatar { width: 2.6rem; height: 2.6rem; border-radius: 50%; background: #fff; color: var(--primary-700, #4338ca); font-weight: 800; display: flex; align-items: center; justify-content: center; flex: none; }
+.sb-profil-teks { display: flex; flex-direction: column; min-width: 0; line-height: 1.25; }
+.sb-profil-teks strong { font-size: .9rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sb-profil-teks span { font-size: .75rem; opacity: .8; }
+
+.dash-card { background: var(--ui-surface); border-radius: 20px; padding: 1.3rem 1.4rem; box-shadow: var(--ui-shadow); height: 100%; }
+.dash-judul { font-weight: 700; font-size: 1rem; margin: 0 0 .9rem; color: var(--ui-text); }
+.dash-label { font-size: .8125rem; color: var(--ui-muted); font-weight: 500; }
+.dash-angka { font-size: 2rem; font-weight: 800; line-height: 1.15; color: var(--ui-text); }
+.dash-ket { font-size: .75rem; color: var(--ui-muted); margin-top: .15rem; }
+
+.dash-ring-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; height: 100%; }
+@media (max-width: 767px) { .dash-ring-grid { grid-template-columns: 1fr; } }
+.dash-ring { display: flex; align-items: center; justify-content: space-between; gap: .75rem; }
+.dash-ring-svg { width: 5rem; height: 5rem; flex: none; }
+.dash-ring-latar { fill: none; stroke: var(--ui-border); stroke-width: 7; }
+.dash-ring-teks { font-size: 15px; font-weight: 700; fill: var(--ui-text); }
+
+.dash-sorot-grid { display: grid; gap: 1rem; height: 100%; grid-template-rows: 1fr 1fr; }
+.dash-sorot { border-radius: 20px; padding: 1.1rem 1.4rem; color: #fff; display: flex; align-items: center; gap: 1.1rem; min-height: 5.5rem; box-shadow: 0 12px 26px rgba(0, 0, 0, .12); }
+.dash-sorot-oranye { background: linear-gradient(135deg, #fb923c, #f97316); }
+.dash-sorot-ungu { background: linear-gradient(135deg, #6366f1, #4338ca); }
+.dash-sorot-angka { font-size: 2.6rem; font-weight: 800; line-height: 1; min-width: 4rem; padding: .55rem .8rem; border-radius: 14px; background: rgba(255, 255, 255, .22); text-align: center; }
+.dash-sorot-judul { font-weight: 700; font-size: 1.05rem; }
+.dash-sorot-ket { font-size: .8rem; opacity: .9; }
+
+.dash-bar-baris { display: grid; grid-template-columns: 3.2rem minmax(0, 1fr) 2.8rem; align-items: center; gap: .7rem; padding: .55rem 0; border-top: 1px solid var(--ui-border); }
+.dash-bar-baris:first-of-type { border-top: 0; }
+.dash-bar-nama { font-weight: 600; font-size: .875rem; color: var(--ui-text); }
+.dash-bar-trek { height: .5rem; border-radius: 999px; background: var(--ui-soft); overflow: hidden; display: block; }
+.dash-bar-isi { display: block; height: 100%; border-radius: 999px; background: linear-gradient(90deg, #6366f1, #a5b4fc); }
+.dash-bar-persen { font-size: .8125rem; font-weight: 700; text-align: right; color: var(--ui-text); }
+
+.dash-kal { display: grid; grid-template-columns: repeat(7, 1fr); gap: .25rem; text-align: center; font-size: .8125rem; }
+.dash-kal-hari { color: var(--ui-muted); font-weight: 600; font-size: .72rem; padding-bottom: .25rem; }
+.dash-kal-tgl { padding: .3rem 0; border-radius: 999px; color: var(--ui-text); }
+.dash-kal-tgl.is-tercatat { background: var(--ui-accent-soft); color: var(--ui-accent); font-weight: 600; }
+.dash-kal-tgl.is-hari-ini { background: var(--ui-accent); color: #fff; font-weight: 700; }
+
+/* ---------- sidebar: perbaikan status fokus, gulir, dan mode menciut ---------- */
+.fi-sidebar .fi-sidebar-item:not(.fi-active) > .fi-sidebar-item-btn { background: transparent !important; }
+.fi-sidebar .fi-sidebar-item:not(.fi-active) > .fi-sidebar-item-btn:hover,
+.fi-sidebar .fi-sidebar-item:not(.fi-active) > .fi-sidebar-item-btn:focus-visible { background: rgba(255, 255, 255, .16) !important; }
+.fi-sidebar-nav { overflow-x: hidden; scrollbar-width: thin; scrollbar-color: rgba(255, 255, 255, .4) transparent; }
+.fi-sidebar-nav::-webkit-scrollbar { width: 6px; }
+.fi-sidebar-nav::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, .4); border-radius: 999px; }
+.fi-sidebar:not(.fi-sidebar-open) .sb-profil { background: transparent; padding: .25rem 0; justify-content: center; margin-bottom: .5rem; }
+.fi-sidebar:not(.fi-sidebar-open) .sb-profil-teks { display: none; }
+.fi-sidebar:not(.fi-sidebar-open) .sb-avatar { width: 2.4rem; height: 2.4rem; font-size: .85rem; }
+.fi-sidebar:not(.fi-sidebar-open) .fi-sidebar-group-label { display: none; }
+.fi-sidebar:not(.fi-sidebar-open) .fi-sidebar-group:not(:first-child) { margin-top: .75rem; padding-top: .75rem; border-top: 1px solid rgba(255, 255, 255, .22); }
+.fi-sidebar:not(.fi-sidebar-open) .fi-tenant-menu button { padding: .35rem; justify-content: center; }
