@@ -1,12 +1,12 @@
 # Naskah demo investor: Hormone Growth
 
-Sistem rapor dan manajemen sekolah untuk **banyak sekolah dalam satu platform**. Nama produk masih sementara.
+Sistem rapor dan manajemen sekolah untuk **banyak sekolah dalam satu platform**.
 Demo ini berjalan lokal dengan data contoh (bukan data asli): dua sekolah berbeda jenjang, SD dan SMP, dengan akun untuk setiap peran.
 
 ## Pesan inti (tiga kalimat)
 1. **Satu platform, banyak sekolah.** Tim pengembang mendaftarkan sekolah, dan data tiap sekolah terpisah penuh.
 2. **Nilai sampai rapor tanpa kertas dan tanpa salah hitung.** Guru mengisi nilai, sistem menghitung, kepala sekolah mengesahkan, rapor terkunci dan berversi, orang tua melihatnya di portal.
-3. **Dibangun bertahap dan diuji.** Aturan penting (hitungan nilai, kunci rapor, hak akses, pemisahan sekolah) dijaga ratusan uji otomatis. Fitur tambahan seperti analisis AI bisa dinyalakan per sekolah.
+3. **Dibangun bertahap dan diuji.** Aturan penting (hitungan nilai, kunci rapor, hak akses, pemisahan sekolah) dijaga ratusan uji otomatis. Fitur tambahan seperti analisis AI dan absensi wajah bisa dinyalakan per sekolah.
 
 ---
 
@@ -27,7 +27,8 @@ Bila ada GAGAL, perbaiki sebelum demo. Jika `demo:periksa --ai` gagal, bagian AI
 4. Siapkan **dua jendela peramban**: satu memakai alamat `127.0.0.1:8000` dan satu memakai `localhost:8000`, supaya dua peran bisa login bersamaan tanpa saling keluar.
 5. Siapkan beberapa foto untuk segmen AI (telapak tangan Anda sendiri, sebuah benda, dan tulisan) di galeri atau HP.
 6. Tutup aplikasi lain dan matikan notifikasi.
-7. Untuk demo di HP: jalankan **`jalankan-hp.bat`** dan buka alamat yang ditampilkan di HP (jaringan Wi-Fi yang sama). Jangan pakai jaringan umum.
+7. Untuk demo di HP (wajib bila ingin memakai **kamera**): jalankan **`jalankan-hp-aman.bat`** dan buka alamat `https://...:8443` yang ditampilkan di HP (Wi-Fi yang sama), lalu pilih Lanjutkan pada peringatan sertifikat. Kamera hanya aktif lewat HTTPS atau `localhost`. Jangan pakai jaringan umum. Untuk tanpa kamera, `jalankan-hp.bat` cukup.
+8. Untuk segmen absensi wajah di laptop: pakai `http://127.0.0.1:8000` (kamera boleh di `localhost`). Daftarkan wajah satu orang (misalnya Anda sendiri) pada satu siswa demo sebelum acara, lalu **hapus** setelahnya.
 
 ### Alamat dan akun
 Kata sandi semua akun demo ada di `database/seeders/DemoSeeder.php` (konstanta `SANDI`) dan dicetak oleh `demo:isi`.
@@ -53,7 +54,7 @@ Kata sandi semua akun demo ada di `database/seeders/DemoSeeder.php` (konstanta `
 
 ---
 
-## B. Alur demo (sekitar 15 menit, AI opsional +3 menit)
+## B. Alur demo (sekitar 15 menit, absensi wajah dan AI opsional +3 menit masing-masing)
 
 | # | Waktu | Peran | Intinya |
 |---|---|---|---|
@@ -63,7 +64,8 @@ Kata sandi semua akun demo ada di `database/seeders/DemoSeeder.php` (konstanta `
 | 4 | 3 mnt | Kepala sekolah | Pengesahan, kunci, revisi berversi, PDF |
 | 5 | 2 mnt | Orang tua dan siswa | Portal |
 | 6 | 1,5 mnt | Admin SMP | Keterpisahan data |
-| 7 | +3 mnt | Admin SD | Analisis AI (opsional) |
+| 7 | +3 mnt | Admin SD | Absensi wajah (opsional, butuh kamera) |
+| 8 | +3 mnt | Admin SD | Analisis AI (opsional) |
 
 ### 1. Satu platform, banyak sekolah (Super Admin)
 Login `super@demo.test` di `/admin`.
@@ -73,7 +75,7 @@ Login `super@demo.test` di `/admin`.
 
 ### 2. Pengelola sekolah (Admin SD)
 Login `admin@harapanbangsa.demo`.
-- **Dasbor:** siswa aktif, guru, kehadiran, rapor yang sudah disahkan, pengumuman.
+- **Dasbor:** cincin kehadiran siswa, kehadiran guru, dan rapor disahkan; kartu siswa aktif dan pengumuman; grafik kehadiran 7 hari, kehadiran per kelas, komposisi siswa, kalender bulan ini, dan papan pengumuman. Nama sekolah tampil di bilah atas.
 - **Data master > Siswa:** 36 siswa dengan kelas dan NISN. Tunjukkan tombol **Impor dari Excel** (data sekolah nyata masuk lewat Excel).
 - **Jadwal > Tampilan mingguan:** jadwal per kelas atau per guru. Katakan: sistem menolak jadwal yang bentrok.
 - **Penilaian > Komponen penilaian:** bobot bebas per sekolah (SMP memakai komponen berbeda, KKM sekolah berbeda).
@@ -88,7 +90,7 @@ Login `kepala@harapanbangsa.demo` > **Rapor siswa** > kelas 6A.
 - Buka siswa berstatus Draf yang lengkap, klik **Sahkan rapor**. Nilai, kehadiran, dan catatan **terkunci**.
 - Buka siswa yang sudah disahkan, klik **Unduh PDF**, tunjukkan kode verifikasi. Salinan rapor yang diubah di luar sistem terdeteksi.
 - Tunjukkan siswa yang **dalam revisi**: alasan wajib dicatat, hasil revisi menjadi versi baru, versi lama bertanda "TIDAK BERLAKU". Katakan: riwayat tidak pernah ditimpa.
-- **Rapor > Laporan akademik:** rekap nilai dan kehadiran per kelas, unduh **PDF** dan **Excel**.
+- **Rapor > Laporan akademik:** rekap nilai dan kehadiran per kelas, unduh **PDF** dan **Excel** (kop, kepala tabel, dan garis sudah bertema; rapor PDF muat satu halaman).
 
 ### 5. Orang tua dan siswa (portal)
 Jendela dengan alamat `localhost:8000`. Login `ortu@harapanbangsa.demo`.
@@ -101,7 +103,15 @@ Jendela dengan alamat `localhost:8000`. Login `ortu@harapanbangsa.demo`.
 Login `admin@cendekia.demo`: tidak ada satu pun data SD yang terlihat, dan menu **Analisis AI tidak muncul** (fitur mati untuk SMP).
 Katakan: "Pemisahan dijaga di database dan di kode, dan diuji otomatis."
 
-### 7. Analisis AI (opsional, hanya SD)
+### 7. Absensi wajah (opsional, hanya SD, butuh kamera)
+Login `admin@harapanbangsa.demo`.
+- **Kehadiran > Daftar wajah siswa:** pilih kelas 4A, klik **Ambil wajah** pada satu siswa, hadapkan wajah dan gerakkan kepala sedikit selama 5 sampel. Katakan: yang disimpan hanya 128 angka terenkripsi, **bukan foto**, dan bisa dihapus kapan saja (tombol Hapus).
+- **Kehadiran > Absen wajah:** pilih kelas 4A, klik **Mulai pindai**, hadapkan wajah lalu **berkedip**. Kehadiran hari itu tercatat sebagai Hadir; buka **Catat kehadiran siswa** untuk melihat catatannya ("Absen wajah").
+- Katakan jujur: pencocokan wajah berjalan di peramban; server tidak bisa memastikan hasilnya, jadi hanya akun yang berhak yang bisa mencatat dan setiap catatan memuat pencatatnya. Tes kedipan menyulitkan foto di layar tetapi tidak membuatnya mustahil. Akurasi bergantung cahaya dan kamera.
+- Pemuatan pertama mengunduh model sekitar 7 MB dan memanaskan pengenalan wajah; lakukan sekali sebelum acara.
+- Fitur ini **mati bawaan** dan menyala hanya di SD (SMP tidak punya menunya). Hapus data wajah uji setelah demo.
+
+### 8. Analisis AI (opsional, hanya SD)
 Login `admin@harapanbangsa.demo` > grup menu **Analisis AI**.
 - **Prompt Kustom:** sudah ada tiga prompt contoh. Tunjukkan bahwa pengguna menulis dan menyimpan prompt sendiri: apa pun yang ingin diketahui dari sebuah foto.
 - **Analisis dengan Prompt:** pilih prompt (misalnya **Palmistry gaya chat**), klik **Ambil foto (kamera)** atau **Pilih dari galeri**, lalu **Analisis foto**. Tidak ada isian wajib lain. Hasil muncul sekitar 4 sampai 15 detik.
@@ -120,13 +130,15 @@ Login `admin@harapanbangsa.demo` > grup menu **Analisis AI**.
 | Siapa pemilik data? | Sekolah. Pengembang mengelola platform. Pembagian tanggung jawab akan diatur dalam kontrak. Tinjauan hukum belum dilakukan. |
 | Bagaimana keamanan? | Data sekolah dipisah di database dan kode, hak akses per peran, kunci rapor berversi dengan sidik, log audit perubahan nilai. Semuanya diuji otomatis. Belum ada audit keamanan pihak ketiga. |
 | Berapa biaya AI? | Terukur sekitar Rp 25 sampai Rp 50 per analisis (Gemini). Ada batas harian per sekolah. Bisa dimatikan per sekolah. |
+| Bagaimana dengan data wajah siswa? | Foto tidak disimpan. Hanya data numerik terenkripsi, fitur mati bawaan, hanya admin sekolah yang mendaftarkan, dan bisa dihapus. Data wajah anak tetap data biometrik yang sensitif; ketentuan persetujuan orang tua dan kebijakan sekolah perlu disiapkan sebelum dipakai nyata, dan tinjauan hukum belum dilakukan. |
 | Apakah foto siswa dipakai? | Tidak dalam demo ini. Aplikasi tidak lagi meminta persetujuan di layar, jadi penggunaan foto orang lain menjadi tanggung jawab sekolah dan pengguna. Admin sekolah saja yang bisa memakainya, dan fiturnya mati bawaan. |
 | Kurikulum? | Bebas diatur sekolah (bawaan Kurikulum Merdeka). KKM, komponen, dan bobot per sekolah. |
 | Bisa diimpor dari data lama? | Ya, ada impor dari Excel (tombol di menu Siswa), lengkap dengan templat dan pemeriksaan data. |
-| Berapa banyak uji? | Lebih dari 670 uji otomatis. Aturan penting juga diuji dengan "merusak kode sengaja" untuk memastikan uji benar-benar menangkap kesalahan. |
+| Berapa banyak uji? | Lebih dari 700 uji otomatis (714 saat terakhir dijalankan). Aturan penting juga diuji dengan "merusak kode sengaja" untuk memastikan uji benar-benar menangkap kesalahan. |
 
 ## D. Batasan yang disampaikan jujur
-- Belum ada: aplikasi Android, mode offline, notifikasi, ujian dan tugas dalam aplikasi, keuangan atau SPP, lupa kata sandi lewat email.
+- Belum ada: aplikasi Android, mode offline, notifikasi, ujian dan tugas dalam aplikasi, keuangan atau SPP, lupa kata sandi lewat email, pilihan penyedia AI selain Gemini, analisis banyak foto sekaligus.
+- Absensi wajah: belum diuji dengan banyak wajah sungguhan, jadi akurasi dan ambang kemiripan belum terbukti di lapangan.
 - Belum ada: peringkat siswa, deskripsi capaian per mata pelajaran.
 - Berjalan lokal untuk demo; server produksi, HTTPS, dan cadangan data terjadwal belum disiapkan.
 - AI: hasil palmistri dan fisiognomi adalah tafsir tradisi untuk hiburan; kualitas bergantung pada foto dan model.
@@ -141,10 +153,12 @@ Login `admin@harapanbangsa.demo` > grup menu **Analisis AI**.
 | Foto ditolak oleh Gemini | Pakai foto lain (benda, tulisan, tangan), atau lewati. |
 | Data demo kacau karena dicoba-coba | `php artisan demo:isi --ya` (70 detik), lalu mulai ulang dari awal. |
 | Lupa kata sandi atau akun hilang | `php artisan demo:isi --ya` mengembalikan semuanya. |
-| Tidak ada internet | Semua bagian jalan, kecuali analisis AI. |
+| Kamera tidak muncul | Buka lewat `http://127.0.0.1:8000` di laptop, atau `https://` dari `jalankan-hp-aman.bat` di HP; izinkan kamera pada peramban. |
+| Wajah tidak dikenali | Cahaya kurang atau jarak terlalu jauh. Pakai **Ambil ulang** pada siswa itu dan daftarkan dengan kondisi mirip saat pindai. |
+| Tidak ada internet | Semua bagian jalan, kecuali analisis AI (model wajah sudah ada di komputer, tidak perlu internet). |
 | Login saling keluar antar peran | Pakai dua alamat berbeda (`127.0.0.1` dan `localhost`) atau jendela penyamaran. |
 
 ## F. Setelah demo
-- Hapus foto dan hasil lewat tombol di kartu hasil atau di **Riwayat Analisis**.
-- Tutup jendela server. Bila memakai `jalankan-hp.bat`, hentikan sebelum meninggalkan jaringan itu.
+- Hapus foto dan hasil lewat tombol di kartu hasil atau di **Riwayat Analisis**. Hapus juga data wajah uji lewat tombol **Hapus** di **Daftar wajah siswa**.
+- Tutup jendela server. Bila memakai `jalankan-hp.bat` atau `jalankan-hp-aman.bat`, hentikan sebelum meninggalkan jaringan itu.
 - Hapus akun uji dengan kata sandi sederhana, jika ada (`demo:periksa` mengingatkan).

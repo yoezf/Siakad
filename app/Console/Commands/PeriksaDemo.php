@@ -59,10 +59,16 @@ class PeriksaDemo extends Command
             });
             $this->cek('SD: pengumuman terbit untuk portal', fn () => Announcement::where('status', 'terbit')->count() >= 4 ? 'ya' : throw new \RuntimeException('Pengumuman kurang'));
             $this->cek('SD: fitur Analisis AI menyala dan ada prompt contoh', fn () => $sd->hasFeature('analisis_ai') && AiPrompt::count() >= 3 ? AiPrompt::count().' prompt' : throw new \RuntimeException('Fitur analisis_ai mati atau prompt contoh hilang'));
+            $this->cek('SD: Absensi wajah menyala dan berkas model wajah ada', function () use ($sd) {
+                $model = ['tiny_face_detector_model.bin', 'face_landmark_68_model.bin', 'face_recognition_model.bin'];
+                $lengkap = collect($model)->every(fn ($f) => is_file(public_path("vendor/face-api/model/$f")));
+
+                return $sd->hasFeature('absensi_wajah') && $lengkap ? 'ya' : throw new \RuntimeException('Fitur absensi_wajah mati atau berkas model hilang (public/vendor/face-api/model)');
+            });
             CurrentSchool::set(null);
         }
         if ($smp) {
-            $this->cek('SMP: fitur Analisis AI mati (sengaja, untuk menunjukkan kontrol per sekolah)', fn () => ! $smp->hasFeature('analisis_ai') ? 'mati' : throw new \RuntimeException('Fitur menyala di SMP'));
+            $this->cek('SMP: fitur Analisis AI dan Absensi wajah mati (sengaja, untuk menunjukkan kontrol per sekolah)', fn () => ! $smp->hasFeature('analisis_ai') && ! $smp->hasFeature('absensi_wajah') ? 'mati' : throw new \RuntimeException('Fitur menyala di SMP'));
         }
 
         $this->cek('Akun uji lemah (admin@admin.test) tidak ada', fn () => ! User::where('email', 'admin@admin.test')->exists() ? 'tidak ada' : throw new \RuntimeException('Masih ada akun dengan kata sandi sederhana. Hapus sebelum demo di jaringan umum.'), peringatan: true);
